@@ -1,5 +1,5 @@
 // Bump this version on every release so iPhone/PC pick up the new files
-const CACHE_NAME = 'verksted-pwa-v10';
+const CACHE_NAME = 'verksted-pwa-v11';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './css/app.css',
