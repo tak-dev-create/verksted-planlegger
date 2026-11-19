@@ -1060,6 +1060,20 @@ service cloud.firestore {
         &amp;&amp; request.resource.data.permissions == resource.data.permissions
         &amp;&amp; request.resource.data.ownerEmail == resource.data.ownerEmail);
       allow delete: if isOwner();
+
+      // Images for a project: same access as the project itself
+      match /media/{mediaId} {
+        function parentData() {
+          return get(/databases/$(database)/documents/projects/$(projectId)).data;
+        }
+        function parentOwner() { return isSignedIn() &amp;&amp; parentData().ownerEmail == userEmail(); }
+        function parentMember() { return isSignedIn() &amp;&amp; (userEmail() in parentData().memberEmails); }
+        function parentWriter() {
+          return parentOwner() || (parentMember() &amp;&amp; parentData().permissions[userEmail()].role == 'write');
+        }
+        allow read: if parentOwner() || parentMember();
+        allow write: if parentWriter();
+      }
     }
   }
 }</pre>
@@ -1150,6 +1164,56 @@ service cloud.firestore {
                 } catch (e) {}
             }
         };
+
+        // ==========================================
+        // MEDIA STORE: images live outside the project documents.
+        // Locally in IndexedDB, in the cloud in projects/{id}/media/{mediaId}.
+        // Projects only hold a reference string "media:<id>".
+        // ==========================================
+        const MEDIA_PREFIX = 'media:';
+        const MEDIA_PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250"><rect width="400" height="250" fill="#0f172a"/><text x="200" y="130" fill="#64748b" font-family="sans-serif" font-size="16" text-anchor="middle">Laster bilde…</text></svg>');
+        const mediaStore = {
+            cache: new Map(),
+            _db: null,
+            _open() {
+                if (this._db) return this._db;
+                this._db = new Promise((resolve, reject) => {
+                    try {
+                        const req = indexedDB.open('verksted-media', 1);
+                        req.onupgradeneeded = () => req.result.createObjectStore('media', { keyPath: 'id' });
+                        req.onsuccess = () => resolve(req.result);
+                        req.onerror = () => reject(req.error);
+                    } catch (e) { reject(e); }
+                });
+                return this._db;
+            },
+            async _tx(mode, fn) {
+                const db = await this._open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction('media', mode);
+                    const result = fn(tx.objectStore('media'));
+                    tx.oncomplete = () => resolve(result && result.result !== undefined ? result.result : undefined);
+                    tx.onerror = () => reject(tx.error);
+                });
+            },
+            async loadAll() {
+                try {
+                    const all = await this._tx('readonly', st => st.getAll());
+                    (all || []).forEach(m => this.cache.set(m.id, m.data));
+                } catch (e) { console.warn('IndexedDB utilgjengelig – bilder holdes kun i minnet', e); }
+            },
+            async put(id, projectId, data) {
+                this.cache.set(id, data);
+                try { await this._tx('readwrite', st => st.put({ id, projectId, data })); } catch (e) {}
+            },
+            async remove(id) {
+                this.cache.delete(id);
+                try { await this._tx('readwrite', st => st.delete(id)); } catch (e) {}
+            }
+        };
+        function isMediaRef(v) { return typeof v === 'string' && v.startsWith(MEDIA_PREFIX); }
+        function mediaIdOf(v) { return isMediaRef(v) ? v.slice(MEDIA_PREFIX.length) : null; }
 
         // Helper to generate realistic technical SVG blueprints as Base64 data URLs for sample data
         function createSampleBlueprintSVG(title, subtitle, dims) {
@@ -1421,6 +1485,12 @@ service cloud.firestore {
                 this.projects.forEach(p => this.syncProjectPermissionsStruct(p));
                 this.projects.forEach(p => this.rememberSignature(p));
 
+                // Load images from IndexedDB, move any inline images out of the project data
+                this.mediaReady = mediaStore.loadAll().then(() => this.migrateInlineMedia()).then(() => {
+                    this.renderDashboard();
+                    if (this.currentProjectId) this.renderProjectDetail();
+                });
+
                 // Real network status (replaces the old simulated toggle as the default)
                 this.isOnline = navigator.onLine !== false;
                 window.addEventListener('online', () => { this.isOnline = true; this.updateSyncBadgeUI(); });
@@ -1461,6 +1531,56 @@ service cloud.firestore {
                     p.ownerEmail = this.firebaseUser.email;
                 }
                 if (p.ownerEmail) p.ownerEmail = p.ownerEmail.trim().toLowerCase();
+            },
+
+            // ---- Images ----
+            mediaSrc(v) {
+                if (!v) return '';
+                if (!isMediaRef(v)) return v;
+                return mediaStore.cache.get(mediaIdOf(v)) || MEDIA_PLACEHOLDER;
+            },
+            async storeMedia(projectId, dataUrl) {
+                const id = 'm-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+                await mediaStore.put(id, projectId, dataUrl);
+                return MEDIA_PREFIX + id;
+            },
+            projectMediaIds(p) {
+                const ids = [];
+                (p.blueprints || []).forEach(b => { const id = mediaIdOf(b.dataUrl); if (id) ids.push(id); });
+                (p.logs || []).forEach(l => { const id = mediaIdOf(l.photoUrl); if (id) ids.push(id); });
+                return ids;
+            },
+            removeMedia(projectId, ref) {
+                const id = mediaIdOf(ref);
+                if (!id) return;
+                mediaStore.remove(id);
+                if (window.fbBridge && this.firebaseUser) window.fbBridge.deleteMedia(projectId, id);
+            },
+            // Moves inline base64 images (old format) into the media store
+            async migrateInlineMedia() {
+                let moved = 0;
+                for (const p of this.projects) {
+                    for (const b of (p.blueprints || [])) {
+                        if (b.dataUrl && b.dataUrl.startsWith('data:')) { b.dataUrl = await this.storeMedia(p.id, b.dataUrl); moved++; }
+                    }
+                    for (const l of (p.logs || [])) {
+                        if (l.photoUrl && l.photoUrl.startsWith('data:')) { l.photoUrl = await this.storeMedia(p.id, l.photoUrl); moved++; }
+                    }
+                }
+                if (moved > 0) {
+                    // Samples stay samples: re-sign them so the migration is not seen as a user edit
+                    this.projects.filter(p => p.isSample).forEach(p => this.rememberSignature(p));
+                    this.saveToStorage(false);
+                }
+                return moved;
+            },
+            // Removes local images that no project references any more
+            async garbageCollectMedia() {
+                const used = new Set();
+                this.projects.forEach(p => this.projectMediaIds(p).forEach(id => used.add(id)));
+                for (const id of [...mediaStore.cache.keys()]) {
+                    if (!used.has(id)) await mediaStore.remove(id);
+                }
             },
 
             // ---- Change detection for sync: cheap hash of the project content (excluding sync metadata) ----
@@ -1988,7 +2108,7 @@ service cloud.firestore {
                     bpGrid.innerHTML = p.blueprints.map(bp => `
                         <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between group" oncontextmenu="return app.handleImageContextMenu(event)">
                             <div onclick="app.openLightbox('${bp.id}', 'blueprint')" class="relative h-56 bg-blueprint cursor-zoom-in overflow-hidden flex items-center justify-center">
-                                <img src="${bp.dataUrl}" alt="${bp.title}" class="w-full h-full object-contain group-hover:scale-105 transition duration-300 no-download-img">
+                                <img src="${app.mediaSrc(bp.dataUrl)}" alt="${bp.title}" class="w-full h-full object-contain group-hover:scale-105 transition duration-300 no-download-img">
                                 <span class="absolute bottom-2 right-2 px-2 py-1 rounded bg-slate-950/80 text-[11px] font-mono text-sky-300 border border-sky-800/50">
                                     🔍 Fullskjerm
                                 </span>
@@ -2003,7 +2123,7 @@ service cloud.firestore {
                                 </div>
                                 <div class="flex items-center gap-1.5">
                                     ${downloadable ? `
-                                        <a href="${bp.dataUrl}" download="${bp.title}.svg" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition">
+                                        <a href="${app.mediaSrc(bp.dataUrl)}" download="${bp.title}.svg" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition">
                                             ⬇ Last ned
                                         </a>
                                     ` : `
@@ -2027,14 +2147,14 @@ service cloud.firestore {
                                 <span class="font-mono text-amber-400 font-medium">${l.date}</span>
                                 <div class="flex items-center gap-3">
                                     ${l.sizeKb ? `<span class="font-mono text-[11px] text-emerald-400">Bilde: ${l.sizeKb} KB</span>` : ''}
-                                    ${l.photoUrl && downloadable ? `<a href="${l.photoUrl}" download="byggelogg-${l.id}.jpg" class="text-sky-400 hover:underline">⬇ Last ned</a>` : ''}
+                                    ${l.photoUrl && downloadable ? `<a href="${app.mediaSrc(l.photoUrl)}" download="byggelogg-${l.id}.jpg" class="text-sky-400 hover:underline">⬇ Last ned</a>` : ''}
                                     ${editable ? `<button onclick="app.deleteLog('${l.id}')" class="text-slate-500 hover:text-red-400">✕</button>` : ''}
                                 </div>
                             </div>
                             <p class="text-sm text-slate-200 leading-relaxed whitespace-pre-line">${l.note}</p>
                             ${l.photoUrl ? `
                                 <div onclick="app.openLightbox('${l.id}', 'log')" class="cursor-zoom-in rounded-lg overflow-hidden border border-slate-800 max-h-64 bg-slate-900 relative">
-                                    <img src="${l.photoUrl}" alt="Byggelogg bilde" class="w-full h-56 object-cover hover:opacity-90 transition no-download-img">
+                                    <img src="${app.mediaSrc(l.photoUrl)}" alt="Byggelogg bilde" class="w-full h-56 object-cover hover:opacity-90 transition no-download-img">
                                 </div>
                             ` : ''}
                         </div>
@@ -2847,12 +2967,13 @@ service cloud.firestore {
                     const { dataUrl, sizeKb } = await this.compressImageFile(file, 1200, 0.75);
                     const p = this.getCurrentProject();
                     const cleanName = file.name.replace(/\.[^/.]+$/, '');
+                    const ref = await this.storeMedia(p.id, dataUrl);
                     p.blueprints.unshift({
                         id: 'bp-' + Date.now(),
                         title: cleanName || 'Plantegning',
                         sizeKb,
                         date: new Date().toLocaleDateString('no-NO', { day: 'numeric', month: 'short', year: 'numeric' }),
-                        dataUrl
+                        dataUrl: ref
                     });
                     event.target.value = '';
                     this.saveToStorage();
@@ -2866,7 +2987,9 @@ service cloud.firestore {
             deleteBlueprint(bpId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
+                const bp = p.blueprints.find(x => x.id === bpId);
                 p.blueprints = p.blueprints.filter(x => x.id !== bpId);
+                if (bp) this.removeMedia(p.id, bp.dataUrl);
                 this.saveToStorage();
                 this.renderProjectDetail();
             },
@@ -2891,7 +3014,7 @@ service cloud.firestore {
                 document.getElementById('log-photo-preview-box').classList.add('hidden');
             },
 
-            addLogEntry(e) {
+            async addLogEntry(e) {
                 e.preventDefault();
                 if (!this.canEdit()) return;
                 const noteInput = document.getElementById('log-note-input');
@@ -2901,11 +3024,12 @@ service cloud.firestore {
                 const p = this.getCurrentProject();
                 const nowStr = new Date().toLocaleDateString('no-NO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
+                const photoRef = this.stagedLogPhoto ? await this.storeMedia(p.id, this.stagedLogPhoto.dataUrl) : null;
                 p.logs.unshift({
                     id: 'log-' + Date.now(),
                     date: nowStr,
                     note,
-                    photoUrl: this.stagedLogPhoto ? this.stagedLogPhoto.dataUrl : null,
+                    photoUrl: photoRef,
                     sizeKb: this.stagedLogPhoto ? this.stagedLogPhoto.sizeKb : 0
                 });
 
@@ -2919,7 +3043,9 @@ service cloud.firestore {
             deleteLog(logId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
+                const log = p.logs.find(x => x.id === logId);
                 p.logs = p.logs.filter(x => x.id !== logId);
+                if (log) this.removeMedia(p.id, log.photoUrl);
                 this.saveToStorage();
                 this.renderProjectDetail();
             },
@@ -2985,10 +3111,12 @@ service cloud.firestore {
                 const p = this.getCurrentProject();
                 if (!p) return;
                 const delId = p.id;
+                const mediaIds = this.projectMediaIds(p);
                 this.projects = this.projects.filter(x => x.id !== delId);
                 delete this._sigs[delId];
+                mediaIds.forEach(id => mediaStore.remove(id));
                 if (window.fbBridge && this.firebaseUser) {
-                    window.fbBridge.deleteProject(delId).catch(() => {});
+                    window.fbBridge.deleteProject(delId, mediaIds).catch(() => {});
                 }
                 this.saveToStorage();
                 this.showDashboard();
@@ -3148,13 +3276,13 @@ self.addEventListener('fetch', (event) => {
                     const bp = p.blueprints.find(x => x.id === itemId);
                     if (!bp) return;
                     title = bp.title;
-                    dataUrl = bp.dataUrl;
+                    dataUrl = this.mediaSrc(bp.dataUrl);
                     document.getElementById('lightbox-meta').textContent = `${bp.date} • Komprimert størrelse: ${bp.sizeKb} KB`;
                 } else {
                     const l = p.logs.find(x => x.id === itemId);
                     if (!l || !l.photoUrl) return;
                     title = 'Byggelogg-bilde';
-                    dataUrl = l.photoUrl;
+                    dataUrl = this.mediaSrc(l.photoUrl);
                     document.getElementById('lightbox-meta').textContent = `${l.date} • ${l.sizeKb} KB`;
                 }
 
@@ -3233,6 +3361,7 @@ self.addEventListener('fetch', (event) => {
             doc,
             setDoc,
             deleteDoc,
+            getDoc,
             onSnapshot,
             query,
             where,
@@ -3263,6 +3392,45 @@ self.addEventListener('fetch', (event) => {
         // Firestore documents are limited to 1 MiB. Stay a bit below it.
         const MAX_DOC_BYTES = 1000000;
         const SYNCED_IDS_KEY = 'verksted_synced_ids';
+        const UPLOADED_MEDIA_KEY = 'verksted_uploaded_media';
+
+        function loadUploadedMedia() {
+            try { return new Set(JSON.parse(safeStorage.getItem(UPLOADED_MEDIA_KEY) || '[]')); }
+            catch (e) { return new Set(); }
+        }
+        function markMediaUploaded(id, uploaded = true) {
+            const set = loadUploadedMedia();
+            if (uploaded) set.add(id); else set.delete(id);
+            safeStorage.setItem(UPLOADED_MEDIA_KEY, JSON.stringify([...set]));
+        }
+
+        // Download images referenced by projects that this device does not have yet
+        const fetchingMedia = new Set();
+        let rerenderTimer = null;
+        function scheduleRerender() {
+            clearTimeout(rerenderTimer);
+            rerenderTimer = setTimeout(() => {
+                window.app.renderDashboard();
+                if (window.app.currentProjectId) window.app.renderProjectDetail();
+            }, 300);
+        }
+        async function fetchMissingMedia(projects) {
+            for (const p of projects) {
+                if (p.isSample) continue;
+                for (const id of window.app.projectMediaIds(p)) {
+                    if (mediaStore.cache.has(id) || fetchingMedia.has(id)) continue;
+                    fetchingMedia.add(id);
+                    getDoc(doc(db, 'projects', p.id, 'media', id)).then(async (snap) => {
+                        if (snap.exists() && snap.data().data) {
+                            await mediaStore.put(id, p.id, snap.data().data);
+                            markMediaUploaded(id);
+                            scheduleRerender();
+                        }
+                    }).catch((err) => console.warn('Kunne ikke hente bilde', id, err.code || err))
+                      .finally(() => fetchingMedia.delete(id));
+                }
+            }
+        }
 
         let fbApp, db, auth;
         let unsubscribers = [];
@@ -3434,6 +3602,11 @@ self.addEventListener('fetch', (event) => {
                     }
                 }
                 toUpload.forEach(p => window.fbBridge.saveProject(p));
+                // Old-format projects from the cloud may still carry inline images
+                app.migrateInlineMedia().then(() => {
+                    fetchMissingMedia(app.projects);
+                    if (complete) app.garbageCollectMedia();
+                });
             };
 
             Object.entries(sources).forEach(([key, src]) => {
@@ -3462,6 +3635,7 @@ self.addEventListener('fetch', (event) => {
         if (auth) {
             onAuthStateChanged(auth, async (user) => {
                 await appReady;
+                await window.app.mediaReady;
                 window.app.firebaseUser = user || null;
                 window.app.syncError = null;
                 if (user) {
@@ -3565,14 +3739,39 @@ self.addEventListener('fetch', (event) => {
                 synced.add(project.id);
                 saveSyncedIds(synced);
                 // Full overwrite (no merge) so removed fields/collaborators really disappear
-                return trackWrite(setDoc(doc(db, 'projects', project.id), data), project.id);
+                const write = trackWrite(setDoc(doc(db, 'projects', project.id), data), project.id);
+                // Upload images that are not in the cloud yet (after the project doc: rules check the parent)
+                const uploaded = loadUploadedMedia();
+                window.app.projectMediaIds(project).forEach((id) => {
+                    if (uploaded.has(id)) return;
+                    const img = mediaStore.cache.get(id);
+                    if (!img) return;
+                    if (img.length > MAX_DOC_BYTES) {
+                        window.app.showToast('Et bilde er for stort for skysynk og ble hoppet over', 'amber');
+                        return;
+                    }
+                    trackWrite(
+                        setDoc(doc(db, 'projects', project.id, 'media', id), { data: img, projectId: project.id, createdAt: Date.now() })
+                            .then(() => markMediaUploaded(id)),
+                        'media ' + id
+                    );
+                });
+                return write;
             },
 
-            deleteProject(projectId) {
+            deleteMedia(projectId, mediaId) {
+                if (!db || !auth || !auth.currentUser) return Promise.resolve();
+                markMediaUploaded(mediaId, false);
+                return trackWrite(deleteDoc(doc(db, 'projects', projectId, 'media', mediaId)), 'delete media ' + mediaId);
+            },
+
+            deleteProject(projectId, mediaIds = []) {
                 if (!db || !auth || !auth.currentUser) return Promise.resolve();
                 const synced = loadSyncedIds();
                 synced.delete(projectId);
                 saveSyncedIds(synced);
+                // Images first: their rules need the parent project to still exist
+                mediaIds.forEach(id => this.deleteMedia(projectId, id));
                 return trackWrite(deleteDoc(doc(db, 'projects', projectId)), 'delete ' + projectId);
             },
 

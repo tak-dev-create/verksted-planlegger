@@ -15,6 +15,20 @@ service cloud.firestore {
         && request.resource.data.permissions == resource.data.permissions
         && request.resource.data.ownerEmail == resource.data.ownerEmail);
       allow delete: if isOwner();
+
+      // Images for a project: same access as the project itself
+      match /media/{mediaId} {
+        function parentData() {
+          return get(/databases/$(database)/documents/projects/$(projectId)).data;
+        }
+        function parentOwner() { return isSignedIn() && parentData().ownerEmail == userEmail(); }
+        function parentMember() { return isSignedIn() && (userEmail() in parentData().memberEmails); }
+        function parentWriter() {
+          return parentOwner() || (parentMember() && parentData().permissions[userEmail()].role == 'write');
+        }
+        allow read: if parentOwner() || parentMember();
+        allow write: if parentWriter();
+      }
     }
   }
 }
