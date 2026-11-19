@@ -138,7 +138,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-base sm:text-lg tracking-tight text-white leading-none">Verkstedplanlegger</h1>
-                        <span class="text-[11px] text-slate-400 font-mono hidden sm:inline-block">xTiles • Tilgangsstyring • PWA</span>
+                        <span class="text-[11px] text-slate-400 font-mono hidden sm:inline-block">Fliser • Tilgangsstyring • PWA</span>
                     </div>
                 </div>
             </div>
@@ -211,7 +211,7 @@
 
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
                     <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-                        <span>xTiles Fremdrift</span>
+                        <span>Fremdrift i fliser</span>
                         <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <div id="kpi-tasks" class="text-2xl font-bold text-white font-mono">40%</div>
@@ -297,7 +297,7 @@
                             <div class="mt-5 pt-4 border-t border-slate-800/80 space-y-3">
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-400">3 xTiles-kort (3/7 utført)</span>
+                                        <span class="text-slate-400">3 fliser (3/7 utført)</span>
                                         <span class="font-mono font-semibold text-slate-200">43%</span>
                                     </div>
                                     <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -340,7 +340,7 @@
                             <div class="mt-5 pt-4 border-t border-slate-800/80 space-y-3">
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-400">3 xTiles-kort (1/4 utført)</span>
+                                        <span class="text-slate-400">3 fliser (1/4 utført)</span>
                                         <span class="font-mono font-semibold text-slate-200">25%</span>
                                     </div>
                                     <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -383,7 +383,7 @@
                             <div class="mt-5 pt-4 border-t border-slate-800/80 space-y-3">
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-400">2 xTiles-kort (2/4 utført)</span>
+                                        <span class="text-slate-400">2 fliser (2/4 utført)</span>
                                         <span class="font-mono font-semibold text-slate-200">50%</span>
                                     </div>
                                     <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -488,7 +488,7 @@
                 <div class="flex items-center gap-1 sm:gap-2 border-t border-slate-800 mt-5 pt-4 overflow-x-auto no-scrollbar">
                     <button onclick="app.switchDetailTab('tasks')" id="tab-btn-tasks" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap flex items-center gap-2 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="layout-grid" aria-hidden="true" class="lucide lucide-layout-grid w-4 h-4"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
-                        <span>xTiles Planlegger &amp; Tavle</span>
+                        <span>Fliser</span>
                         <span id="badge-count-tasks" class="px-1.5 py-0.2 rounded-full text-[11px] font-mono bg-slate-800 text-slate-300">0</span>
                     </button>
                     <button onclick="app.switchDetailTab('bom')" id="tab-btn-bom" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap flex items-center gap-2 transition">
@@ -517,11 +517,11 @@
             <!-- TAB 1: xTILES PLANLEGGER / AKTIVITETSTAVLE                 -->
             <!-- ========================================================== -->
             <div id="detail-tab-tasks" class="space-y-5">
-                <!-- xTiles Toolbar -->
+                <!-- Fliser: verktøylinje -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                         <h3 class="font-bold text-base text-white flex items-center gap-2">
-                            <span>xTiles Aktivitetstavle</span>
+                            <span>Flistavle</span>
                             <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Visuelt rutenett</span>
                         </h3>
                         <p class="text-xs text-slate-400 mt-0.5">Organiser prosjektet i fargekodede fliser for sjekklister, milepæler med push-påminnelser og tekniske spesifikasjoner.</p>
@@ -539,7 +539,7 @@
                     </div>
                 </div>
 
-                <!-- xTiles Responsive Multi-Card Grid -->
+                <!-- Fliser: rutenett -->
                 <div id="xtiles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
                     <!-- Rendered dynamically via JS -->
                 </div>
@@ -851,7 +851,7 @@
     <div id="modal-new-tile" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between">
-                <h3 class="text-base font-bold text-white">Opprett ny xTiles-flis på tavlen</h3>
+                <h3 class="text-base font-bold text-white">Opprett ny flis</h3>
                 <button onclick="document.getElementById('modal-new-tile').classList.add('hidden')" class="text-slate-400 hover:text-white">✕</button>
             </div>
             <form onsubmit="app.createNewTile(event)" class="space-y-4">
@@ -939,6 +939,16 @@
                 </div>
             </form>
 
+            <!-- Shown after an invitation was added -->
+            <div id="invite-success" class="hidden bg-emerald-950/40 border border-emerald-700/60 rounded-xl p-4 space-y-3">
+                <div class="text-sm font-semibold text-emerald-300">✓ <span id="invite-success-text"></span></div>
+                <p class="text-[11px] text-slate-300 leading-relaxed">Tilgangen er lagret. Appen sender ikke e-post selv – send personen en invitasjon med lenke og fremgangsmåte:</p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <a id="invite-mail-link" href="#" class="flex-1 text-center py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">📧 Send e-post med invitasjon</a>
+                    <button type="button" onclick="app.copyInviteText()" class="flex-1 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition">📋 Kopier tekst (SMS o.l.)</button>
+                </div>
+            </div>
+
             <!-- Collaborators List -->
             <div class="space-y-2.5">
                 <div class="flex items-center justify-between text-xs text-slate-400">
@@ -952,6 +962,30 @@
         </div>
     </div>
 
+
+
+    <!-- ========================================== -->
+    <!-- BEKREFT SLETTING                           -->
+    <!-- ========================================== -->
+    <div id="modal-confirm" class="hidden fixed inset-0 z-[250] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-red-900/60 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-start gap-3">
+                <div class="text-2xl leading-none">🗑️</div>
+                <div class="min-w-0">
+                    <h3 id="confirm-title" class="text-base font-bold text-white">Slette?</h3>
+                    <p id="confirm-message" class="text-xs text-slate-300 mt-1 leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+            <div id="confirm-type-box" class="hidden space-y-1.5">
+                <label for="confirm-type-input" class="block text-[11px] text-slate-400">Skriv <strong id="confirm-type-word" class="text-red-300">SLETT</strong> for å bekrefte</label>
+                <input type="text" id="confirm-type-input" autocomplete="off" autocapitalize="characters" oninput="app._confirmTyped()" class="w-full bg-slate-950 border border-slate-700 focus:border-red-500 rounded-lg px-3 py-2.5 text-sm text-white font-mono outline-none">
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button type="button" onclick="app._confirmClose(false)" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium transition">Avbryt</button>
+                <button type="button" id="confirm-ok" onclick="app._confirmClose(true)" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed">Slett</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================== -->
     <!-- BRUKERADMINISTRASJON (KUN APP-EIERE)       -->
@@ -1228,7 +1262,7 @@ service cloud.firestore {
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-20 md:bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-sm">
+    <div id="toast" class="fixed bottom-20 md:bottom-6 right-6 z-[300] transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-sm">
         <span id="toast-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
         <span id="toast-msg">Endring lagret</span>
     </div>
@@ -2018,7 +2052,7 @@ service cloud.firestore {
                             <div class="mt-5 pt-4 border-t border-slate-800/80 space-y-3">
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
-                                        <span class="text-slate-400">${tileCount} xTiles-kort (${tDone}/${tTotal} utført)</span>
+                                        <span class="text-slate-400">${tileCount} flis${tileCount === 1 ? '' : 'er'} (${tDone}/${tTotal} utført)</span>
                                         <span class="font-mono font-semibold text-slate-200">${pct}%</span>
                                     </div>
                                     <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -2047,6 +2081,76 @@ service cloud.firestore {
             setCategory(cat) {
                 this.activeCategory = cat;
                 this.renderDashboard();
+            },
+
+            // ==========================================
+            // CONFIRM DIALOG – resolves true/false
+            // ==========================================
+            confirmAction({ title = 'Slette?', message = '', confirmText = 'Slett', requireWord = '' } = {}) {
+                return new Promise(resolve => {
+                    this._confirmResolve = resolve;
+                    this._confirmWord = requireWord;
+                    document.getElementById('confirm-title').textContent = title;
+                    document.getElementById('confirm-message').textContent = message;
+                    const ok = document.getElementById('confirm-ok');
+                    ok.textContent = confirmText;
+                    const box = document.getElementById('confirm-type-box');
+                    const input = document.getElementById('confirm-type-input');
+                    input.value = '';
+                    box.classList.toggle('hidden', !requireWord);
+                    document.getElementById('confirm-type-word').textContent = requireWord;
+                    ok.disabled = !!requireWord;
+                    document.getElementById('modal-confirm').classList.remove('hidden');
+                    setTimeout(() => (requireWord ? input : ok).focus(), 50);
+                });
+            },
+            _confirmTyped() {
+                const v = document.getElementById('confirm-type-input').value.trim().toUpperCase();
+                document.getElementById('confirm-ok').disabled = v !== this._confirmWord;
+            },
+            _confirmClose(result) {
+                document.getElementById('modal-confirm').classList.add('hidden');
+                const r = this._confirmResolve;
+                this._confirmResolve = null;
+                if (r) r(!!result);
+            },
+
+            // ---- Invitation text (the app cannot send e-mail itself) ----
+            buildInviteText(name, email, project, role) {
+                const url = location.origin + location.pathname.replace(/index\.html$/, '');
+                return {
+                    subject: `Invitasjon til «${project.title}» i Verksted-planleggeren`,
+                    body: `Hei ${name || ''},\n\n` +
+                        `Du er invitert til prosjektet «${project.title}» med ${role === 'write' ? 'skrivetilgang' : 'lesetilgang'}.\n\n` +
+                        `Slik kommer du i gang:\n` +
+                        `1. Åpne ${url}\n` +
+                        `2. Logg inn med Google, eller trykk «Ny bruker (invitert)» og lag et passord.\n` +
+                        `   Bruk denne e-postadressen: ${email}\n` +
+                        `3. Bekreft e-postadressen via lenken du får tilsendt.\n` +
+                        `4. Prosjektet dukker opp automatisk.\n\n` +
+                        `På iPhone: åpne lenken i Safari, trykk Del-knappen og «Legg til på Hjem-skjerm».\n`
+                };
+            },
+            showInviteSuccess(name, email, project, role) {
+                const t = this.buildInviteText(name, email, project, role);
+                this._lastInvite = t;
+                document.getElementById('invite-success-text').textContent = `${name || email} har fått ${role === 'write' ? 'skrivetilgang' : 'lesetilgang'} til prosjektet`;
+                document.getElementById('invite-mail-link').href =
+                    `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(t.subject)}&body=${encodeURIComponent(t.body)}`;
+                document.getElementById('invite-success').classList.remove('hidden');
+            },
+            async copyInviteText() {
+                if (!this._lastInvite) return;
+                const text = `${this._lastInvite.subject}\n\n${this._lastInvite.body}`;
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch (e) {
+                    const ta = document.createElement('textarea');
+                    ta.value = text; document.body.appendChild(ta); ta.select();
+                    try { document.execCommand('copy'); } catch (e2) {}
+                    ta.remove();
+                }
+                this.showToast('Invitasjonsteksten er kopiert', 'emerald');
             },
 
             // ==========================================
@@ -2306,7 +2410,11 @@ service cloud.firestore {
             },
             async adminRemoveUser(email) {
                 if (!this.isAdmin || this.APP_OWNERS.includes(email)) return;
-                if (!confirm(`Fjerne ${email} fra alle prosjekter og slette brukeroppføringen?\n\nBrukeren mister all tilgang. Kontoen i Firebase Authentication blir liggende, men har ingen tilgang.`)) return;
+                if (!(await this.confirmAction({
+                    title: 'Fjerne brukeren?',
+                    message: `${email} fjernes fra alle prosjekter og mister all tilgang. Kontoen i Firebase blir liggende, men har ingen tilgang.`,
+                    confirmText: 'Fjern brukeren'
+                }))) return;
                 this.projects.forEach(p => {
                     const before = (p.collaborators || []).length;
                     p.collaborators = (p.collaborators || []).filter(c => (c.email || '').toLowerCase() !== email);
@@ -2455,7 +2563,7 @@ service cloud.firestore {
                 document.getElementById('badge-count-blueprints').textContent = p.blueprints.length;
                 document.getElementById('badge-count-log').textContent = p.logs.length;
 
-                // 1. Render xTiles Grid
+                // 1. Render tiles grid
                 this.renderXTilesGrid(p, editable);
 
                 // Render Technical Specs
@@ -2617,7 +2725,7 @@ service cloud.firestore {
                 if (tiles.length === 0) {
                     grid.innerHTML = `
                         <div class="col-span-full bg-slate-900 border border-dashed border-slate-800 rounded-2xl p-10 text-center space-y-3">
-                            <p class="text-sm text-slate-300 font-medium">Ingen xTiles-fliser på tavlen ennå</p>
+                            <p class="text-sm text-slate-300 font-medium">Ingen fliser ennå</p>
                             ${editable ? `<button onclick="app.openNewTileModal('checklist')" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-semibold text-xs">+ Opprett første flis</button>` : ''}
                         </div>
                     `;
@@ -2758,9 +2866,17 @@ service cloud.firestore {
                 this.renderProjectDetail();
             },
 
-            deleteTile(tileId) {
+            async deleteTile(tileId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
+                const tile = p.tiles.find(t => t.id === tileId);
+                if (!tile) return;
+                const n = (tile.items || []).length;
+                if (!(await this.confirmAction({
+                    title: 'Slette flisen?',
+                    message: `«${tile.title}»${n ? ` og ${n} punkt${n === 1 ? '' : 'er'} i den` : ''} blir slettet for alle med tilgang til prosjektet.`,
+                    confirmText: 'Slett flisen'
+                }))) return;
                 p.tiles = p.tiles.filter(t => t.id !== tileId);
                 this.saveToStorage();
                 this.renderProjectDetail();
@@ -2832,10 +2948,13 @@ service cloud.firestore {
                 }
             },
 
-            deleteTileItem(tileId, itemId) {
+            async deleteTileItem(tileId, itemId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
                 const tile = p.tiles.find(t => t.id === tileId);
+                const item = tile && (tile.items || []).find(i => i.id === itemId);
+                if (!item) return;
+                if (!(await this.confirmAction({ title: 'Slette punktet?', message: `«${item.text}»`, confirmText: 'Slett' }))) return;
                 if (tile && tile.items) {
                     tile.items = tile.items.filter(i => i.id !== itemId);
                     this.saveToStorage();
@@ -2852,6 +2971,7 @@ service cloud.firestore {
                 document.getElementById('share-modal-project-name').textContent = `Prosjekt: ${p.title}`;
                 document.getElementById('share-project-id-code').textContent = `/projects/${p.id}`;
                 this.renderCollaboratorsList();
+                document.getElementById('invite-success').classList.add('hidden');
                 document.getElementById('modal-share').classList.remove('hidden');
             },
 
@@ -2934,7 +3054,8 @@ service cloud.firestore {
                 this.saveToStorage();
                 this.renderCollaboratorsList();
                 this.renderProjectDetail();
-                this.showToast(`La til ${name} (${role}) på "${p.title}"`, 'emerald');
+                this.showInviteSuccess(name, email, p, role);
+                this.showToast(`${name || email} er invitert til «${p.title}»`, 'emerald');
             },
 
             toggleCollaboratorRole(collabId) {
@@ -2961,9 +3082,16 @@ service cloud.firestore {
                 }
             },
 
-            removeCollaborator(collabId) {
+            async removeCollaborator(collabId) {
                 const p = this.getCurrentProject();
                 if (!this.canManageProject(p)) return;
+                const c = (p.collaborators || []).find(x => x.id === collabId);
+                if (!c) return;
+                if (!(await this.confirmAction({
+                    title: 'Fjerne tilgangen?',
+                    message: `${c.name || c.email} mister tilgangen til «${p.title}».`,
+                    confirmText: 'Fjern tilgang'
+                }))) return;
                 p.collaborators = p.collaborators.filter(x => x.id !== collabId);
                 this.syncProjectPermissionsStruct(p);
                 this.saveToStorage();
@@ -3247,7 +3375,7 @@ service cloud.firestore {
                 const container = document.getElementById('reminders-list');
 
                 if (reminders.length === 0) {
-                    container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950 border border-slate-800 text-center text-xs text-slate-500">Ingen aktive påminnelser. Slå på 🔔 Varsel på et sjekkpunkt i xTiles-tavlen!</div>`;
+                    container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950 border border-slate-800 text-center text-xs text-slate-500">Ingen aktive påminnelser. Slå på 🔔 Varsel på et punkt i en flis!</div>`;
                 } else {
                     const groups = [
                         ['overdue', '⚠️ Forfalt', 'text-red-300'],
@@ -3391,9 +3519,12 @@ service cloud.firestore {
                 this.renderProjectDetail();
             },
 
-            deleteSpec(idx) {
+            async deleteSpec(idx) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
+                const sp = (p.specs || [])[idx];
+                if (!sp) return;
+                if (!(await this.confirmAction({ title: 'Slette spesifikasjonen?', message: `${sp.label}: ${sp.value}`, confirmText: 'Slett' }))) return;
                 p.specs.splice(idx, 1);
                 this.saveToStorage();
                 this.renderProjectDetail();
@@ -3568,7 +3699,7 @@ service cloud.firestore {
                                                 class="w-full h-10 text-right bg-slate-950 border border-slate-700 focus:border-amber-500 rounded-lg px-2 text-sm font-mono text-white outline-none">
                                         </label>
                                     </div>
-                                    <button type="button" onclick="if (confirm('Slette «${String(b.name).replace(/'/g, '')}»?')) app.deleteBomItem('${b.id}')" class="w-full py-2 rounded-lg border border-red-900/60 text-red-300 text-xs active:bg-red-950">Slett del</button>
+                                    <button type="button" onclick="app.deleteBomItem('${b.id}')" class="w-full py-2 rounded-lg border border-red-900/60 text-red-300 text-xs active:bg-red-950">Slett del</button>
                                     ` : ''}
                                 </div>` : ''}
                             </div>`;
@@ -3973,9 +4104,12 @@ Avbryt = legg linjene til nederst`)) {
                 }
             },
 
-            deleteBomItem(bomId) {
+            async deleteBomItem(bomId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
+                const b = (p.bom || []).find(x => x.id === bomId);
+                if (!b) return;
+                if (!(await this.confirmAction({ title: 'Slette delen?', message: `«${b.name}» fjernes fra materiallisten.`, confirmText: 'Slett delen' }))) return;
                 p.bom = p.bom.filter(x => x.id !== bomId);
                 this.saveToStorage();
                 this.renderProjectDetail();
@@ -4039,10 +4173,12 @@ Avbryt = legg linjene til nederst`)) {
                 }
             },
 
-            deleteBlueprint(bpId) {
+            async deleteBlueprint(bpId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
                 const bp = p.blueprints.find(x => x.id === bpId);
+                if (!bp) return;
+                if (!(await this.confirmAction({ title: 'Slette plantegningen?', message: `«${bp.title}» og bildet slettes for alle.`, confirmText: 'Slett tegningen' }))) return;
                 p.blueprints = p.blueprints.filter(x => x.id !== bpId);
                 if (bp) this.removeMedia(p.id, bp.dataUrl);
                 this.saveToStorage();
@@ -4095,10 +4231,17 @@ Avbryt = legg linjene til nederst`)) {
                 this.renderProjectDetail();
             },
 
-            deleteLog(logId) {
+            async deleteLog(logId) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
                 const log = p.logs.find(x => x.id === logId);
+                if (!log) return;
+                if (!(await this.confirmAction({
+                    title: 'Slette loggføringen?',
+                    message: `${log.date}${log.photoUrl ? ' – med bilde' : ''}
+«${String(log.note || '').slice(0, 120)}»`,
+                    confirmText: 'Slett'
+                }))) return;
                 p.logs = p.logs.filter(x => x.id !== logId);
                 if (log) this.removeMedia(p.id, log.photoUrl);
                 this.saveToStorage();
@@ -4167,10 +4310,22 @@ Avbryt = legg linjene til nederst`)) {
                 this.openProject(newProj.id);
             },
 
-            deleteCurrentProject() {
+            async deleteCurrentProject() {
                 if (!this.canManageProject()) return;
                 const p = this.getCurrentProject();
                 if (!p) return;
+                const parts = [];
+                const tiles = (p.tiles || []).length, bom = (p.bom || []).length, imgs = this.projectMediaIds(p).length, logs = (p.logs || []).length;
+                if (tiles) parts.push(`${tiles} flis${tiles === 1 ? '' : 'er'}`);
+                if (bom) parts.push(`${bom} BOM-linje${bom === 1 ? '' : 'r'}`);
+                if (logs) parts.push(`${logs} loggføring${logs === 1 ? '' : 'er'}`);
+                if (imgs) parts.push(`${imgs} bilde${imgs === 1 ? '' : 'r'}`);
+                if (!(await this.confirmAction({
+                    title: 'Slette hele prosjektet?',
+                    message: `«${p.title}»${parts.length ? ` med ${parts.join(', ')}` : ''} slettes for godt – også for alle som er invitert. Dette kan ikke angres.`,
+                    confirmText: 'Slett prosjektet',
+                    requireWord: 'SLETT'
+                }))) return;
                 const delId = p.id;
                 const mediaIds = this.projectMediaIds(p);
                 this.projects = this.projects.filter(x => x.id !== delId);
@@ -4346,7 +4501,7 @@ Avbryt = legg linjene til nederst`)) {
                 this.simulatedRole = 'owner';
                 this.saveToStorage(false);
                 this.showDashboard();
-                this.showToast('Eksempelprosjekter med xTiles og deltakere ble tilbakestilt', 'emerald');
+                this.showToast('Eksempelprosjekter ble tilbakestilt', 'emerald');
             },
 
             showToast(msg, color = 'emerald') {
@@ -4361,6 +4516,10 @@ Avbryt = legg linjene til nederst`)) {
                 }, 2800);
             }
         };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('modal-confirm').classList.contains('hidden')) app._confirmClose(false);
+        });
 
         // Expose the app object to the Firebase module (top-level const is not a window property)
         window.app = app;

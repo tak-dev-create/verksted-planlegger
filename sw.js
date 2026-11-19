@@ -1,5 +1,5 @@
 // Bump this version on every release so iPhone/PC pick up the new files
-const CACHE_NAME = 'verksted-pwa-v9';
+const CACHE_NAME = 'verksted-pwa-v10';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './css/app.css',
@@ -39,7 +39,8 @@ self.addEventListener('fetch', (event) => {
   // The app's own files: network first (always newest), cache as offline fallback
   if (url.origin === location.origin) {
     event.respondWith(
-      fetch(req)
+      // no-cache = always ask the server (cheap 304 when unchanged), never a stale HTTP-cache copy
+      fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' })
         .then((res) => {
           if (res && res.ok) {
             const copy = res.clone();
