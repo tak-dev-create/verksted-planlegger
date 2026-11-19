@@ -6,36 +6,19 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Verksted">
     <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+    <meta name="theme-color" content="#020617">
     <title>Verksted &amp; Hobbyplanlegger</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest" crossorigin="anonymous"></script>
-    <!-- SheetJS (XLSX) for Excel Import & Template Generation -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- Tailwind CSS, precompiled (rebuild: see tailwind.config.js) -->
+    <link rel="stylesheet" href="css/app.css">
+    <!-- SheetJS (XLSX) for Excel import – bundled locally so it works offline -->
+    <script src="vendor/xlsx-0.20.2.full.min.js" defer></script>
     <!-- Google Fonts: Inter & JetBrains Mono for technical specs -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        workshop: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#020617',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         /* Custom scrollbar and utility tweaks for mobile/iOS */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -61,7 +44,7 @@
             user-select: none;
         }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Inter, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:JetBrains Mono, monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.inset-x-0{left:0px;right:0px}.bottom-0{bottom:0px}.bottom-20{bottom:5rem}.left-1\/2{left:50%}.left-3{left:0.75rem}.right-6{right:1.5rem}.top-0{top:0px}.top-2\.5{top:0.625rem}.top-3{top:0.75rem}.z-30{z-index:30}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.my-2{margin-top:0.5rem;margin-bottom:0.5rem}.-ml-2{margin-left:-0.5rem}.-mt-5{margin-top:-1.25rem}.mb-1{margin-bottom:0.25rem}.mb-6{margin-bottom:1.5rem}.ml-auto{margin-left:auto}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.line-clamp-2{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-full{height:100%}.h-10{height:2.5rem}.h-12{height:3rem}.h-2{height:0.5rem}.h-2\.5{height:0.625rem}.h-3\.5{height:0.875rem}.h-36{height:9rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-fit{height:-moz-fit-content;height:fit-content}.h-1\.5{height:0.375rem}.max-h-40{max-height:10rem}.max-h-\[82vh\]{max-height:82vh}.max-h-\[90vh\]{max-height:90vh}.max-h-\[92vh\]{max-height:92vh}.w-10{width:2.5rem}.w-12{width:3rem}.w-2{width:0.5rem}.w-2\.5{width:0.625rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-9{width:2.25rem}.w-\[94\%\]{width:94%}.w-full{width:100%}.w-px{width:1px}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-6xl{max-width:72rem}.max-w-7xl{max-width:80rem}.max-w-full{max-width:100%}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.border-collapse{border-collapse:collapse}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-32{--tw-translate-y:-8rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-y-12{--tw-translate-y:3rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-12{--tw-rotate:-12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-around{justify-content:space-around}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-slate-800\/70 > :not([hidden]) ~ :not([hidden]){border-color:rgb(30 41 59 / 0.7)}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-4{border-width:4px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-500\/20{border-color:rgb(245 158 11 / 0.2)}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3)}.border-amber-500\/40{border-color:rgb(245 158 11 / 0.4)}.border-amber-500\/50{border-color:rgb(245 158 11 / 0.5)}.border-emerald-500\/30{border-color:rgb(16 185 129 / 0.3)}.border-emerald-500\/40{border-color:rgb(16 185 129 / 0.4)}.border-emerald-700\/50{border-color:rgb(4 120 87 / 0.5)}.border-emerald-700\/60{border-color:rgb(4 120 87 / 0.6)}.border-red-700\/60{border-color:rgb(185 28 28 / 0.6)}.border-sky-500\/30{border-color:rgb(14 165 233 / 0.3)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity, 1))}.border-slate-950{--tw-border-opacity:1;border-color:rgb(2 6 23 / var(--tw-border-opacity, 1))}.border-amber-700\/60{border-color:rgb(180 83 9 / 0.6)}.border-purple-700\/60{border-color:rgb(126 34 206 / 0.6)}.border-purple-800\/60{border-color:rgb(107 33 168 / 0.6)}.border-sky-700\/60{border-color:rgb(3 105 161 / 0.6)}.border-sky-800\/60{border-color:rgb(7 89 133 / 0.6)}.border-slate-700\/80{border-color:rgb(51 65 85 / 0.8)}.border-slate-800\/80{border-color:rgb(30 41 59 / 0.8)}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity, 1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1)}.bg-amber-500\/15{background-color:rgb(245 158 11 / 0.15)}.bg-amber-500\/20{background-color:rgb(245 158 11 / 0.2)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.bg-emerald-500\/20{background-color:rgb(16 185 129 / 0.2)}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34 / var(--tw-bg-opacity, 1))}.bg-emerald-950\/30{background-color:rgb(2 44 34 / 0.3)}.bg-red-950\/80{background-color:rgb(69 10 10 / 0.8)}.bg-sky-500\/15{background-color:rgb(14 165 233 / 0.15)}.bg-sky-500\/20{background-color:rgb(14 165 233 / 0.2)}.bg-sky-500\/30{background-color:rgb(14 165 233 / 0.3)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/90{background-color:rgb(15 23 42 / 0.9)}.bg-slate-900\/95{background-color:rgb(15 23 42 / 0.95)}.bg-slate-950\/75{background-color:rgb(2 6 23 / 0.75)}.bg-slate-950\/80{background-color:rgb(2 6 23 / 0.8)}.bg-slate-950\/85{background-color:rgb(2 6 23 / 0.85)}.bg-slate-950\/95{background-color:rgb(2 6 23 / 0.95)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-amber-950\/80{background-color:rgb(69 26 3 / 0.8)}.bg-emerald-950\/60{background-color:rgb(2 44 34 / 0.6)}.bg-purple-950\/80{background-color:rgb(59 7 100 / 0.8)}.bg-sky-950\/80{background-color:rgb(8 47 73 / 0.8)}.bg-slate-950\/20{background-color:rgb(2 6 23 / 0.2)}.object-contain{object-fit:contain}.object-cover{object-fit:cover}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-20{padding-bottom:5rem}.pb-1{padding-bottom:0.25rem}.pb-4{padding-bottom:1rem}.pl-9{padding-left:2.25rem}.pr-3{padding-right:0.75rem}.pt-1{padding-top:0.25rem}.pt-2{padding-top:0.5rem}.pt-3{padding-top:0.75rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-sans{font-family:Inter, sans-serif}.font-mono{font-family:JetBrains Mono, monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.tracking-tight{letter-spacing:-0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity, 1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-amber-300\/90{color:rgb(252 211 77 / 0.9)}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.text-purple-300{--tw-text-opacity:1;color:rgb(216 180 254 / var(--tw-text-opacity, 1))}.text-purple-400{--tw-text-opacity:1;color:rgb(192 132 252 / var(--tw-text-opacity, 1))}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity, 1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.placeholder-slate-500::placeholder{--tw-placeholder-opacity:1;color:rgb(100 116 139 / var(--tw-placeholder-opacity, 1))}.accent-amber-500{accent-color:#f59e0b}.opacity-0{opacity:0}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-amber-500\/10{--tw-shadow-color:rgb(245 158 11 / 0.1);--tw-shadow:var(--tw-shadow-colored)}.shadow-amber-500\/20{--tw-shadow-color:rgb(245 158 11 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.shadow-amber-500\/30{--tw-shadow-color:rgb(245 158 11 / 0.3);--tw-shadow:var(--tw-shadow-colored)}.outline-none{outline:2px solid transparent;outline-offset:2px}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.duration-200{transition-duration:200ms}.selection\:bg-amber-500 *::selection{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.selection\:text-slate-950 *::selection{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.selection\:bg-amber-500::selection{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.selection\:text-slate-950::selection{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity, 1))}.hover\:border-amber-500:hover{--tw-border-opacity:1;border-color:rgb(245 158 11 / var(--tw-border-opacity, 1))}.hover\:border-amber-500\/60:hover{border-color:rgb(245 158 11 / 0.6)}.hover\:bg-amber-400:hover{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-500\/30:hover{background-color:rgb(16 185 129 / 0.3)}.hover\:bg-red-950:hover{--tw-bg-opacity:1;background-color:rgb(69 10 10 / var(--tw-bg-opacity, 1))}.hover\:bg-red-950\/60:hover{background-color:rgb(69 10 10 / 0.6)}.hover\:bg-sky-500\/25:hover{background-color:rgb(14 165 233 / 0.25)}.hover\:bg-slate-100:hover{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-900\/90:hover{background-color:rgb(15 23 42 / 0.9)}.hover\:text-amber-300:hover{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.hover\:text-amber-400:hover{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.hover\:text-red-300:hover{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity, 1))}.hover\:text-red-400:hover{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.hover\:text-slate-200:hover{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow-amber-500\/5:hover{--tw-shadow-color:rgb(245 158 11 / 0.05);--tw-shadow:var(--tw-shadow-colored)}.focus\:border-amber-500:focus{--tw-border-opacity:1;border-color:rgb(245 158 11 / var(--tw-border-opacity, 1))}.group:hover .group-hover\:bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.group:hover .group-hover\:text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:col-span-1{grid-column:span 1 / span 1}.sm\:col-span-2{grid-column:span 2 / span 2}.sm\:col-span-3{grid-column:span 3 / span 3}.sm\:col-span-4{grid-column:span 4 / span 4}.sm\:block{display:block}.sm\:inline-block{display:inline-block}.sm\:inline{display:inline}.sm\:flex{display:flex}.sm\:w-64{width:16rem}.sm\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:gap-2{gap:0.5rem}.sm\:gap-2\.5{gap:0.625rem}.sm\:gap-4{gap:1rem}.sm\:p-5{padding:1.25rem}.sm\:p-6{padding:1.5rem}.sm\:px-4{padding-left:1rem;padding-right:1rem}.sm\:pb-0{padding-bottom:0px}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:bottom-6{bottom:1.5rem}.md\:ml-1{margin-left:0.25rem}.md\:inline{display:inline}.md\:hidden{display:none}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-center{align-items:center}.md\:border-t-0{border-top-width:0px}.md\:pb-0{padding-bottom:0px}.md\:pt-0{padding-top:0px}.md\:text-right{text-align:right}}@media (min-width: 1024px){.lg\:col-span-2{grid-column:span 2 / span 2}.lg\:inline{display:inline}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:flex-row{flex-direction:row}.lg\:items-center{align-items:center}}</style></head>
+</head>
 <body class="h-full flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-slate-950 pb-20 md:pb-0">
 
     <!-- SIMULATED iOS / WEB PUSH BANNER (For preview testing) -->
@@ -1511,6 +1494,12 @@ service cloud.firestore {
                     if (this.currentProjectId) this.renderProjectDetail();
                 });
 
+                // Old text deadlines -> real dates; check reminders every 30 s while the app is open
+                this.migrateDueDates();
+                setTimeout(() => this.checkDueReminders(), 3000);
+                setInterval(() => this.checkDueReminders(), 30000);
+                document.addEventListener('visibilitychange', () => { if (!document.hidden) this.checkDueReminders(); });
+
                 // Real network status (replaces the old simulated toggle as the default)
                 this.isOnline = navigator.onLine !== false;
                 window.addEventListener('online', () => { this.isOnline = true; this.updateSyncBadgeUI(); });
@@ -1803,7 +1792,7 @@ service cloud.firestore {
                 document.getElementById('kpi-projects-sub').textContent = `Av totalt ${this.projects.length} prosjekter`;
                 document.getElementById('kpi-tasks').textContent = `${taskPct}%`;
                 document.getElementById('kpi-tasks-sub').textContent = `${doneTasks} av ${totalTasks} sjekkpunkter utført`;
-                document.getElementById('kpi-missing-parts').textContent = `${missingParts} enheter`;
+                document.getElementById('kpi-missing-parts').textContent = `${this.fmtNum(missingParts)} enheter`;
                 document.getElementById('kpi-missing-cost').textContent = `Innkjøpsbehov: ${missingCost.toLocaleString('no-NO')} kr`;
                 document.getElementById('kpi-total-cost').textContent = `${totalCost.toLocaleString('no-NO')} kr`;
 
@@ -2236,14 +2225,18 @@ service cloud.firestore {
                         bodyHtml = `
                             <div class="p-4 space-y-3">
                                 <div class="space-y-2">
-                                    ${items.length === 0 ? `<p class="text-xs text-slate-500 italic">Ingen punkter ennå.</p>` : items.map(item => `
+                                    ${items.length === 0 ? `<p class="text-xs text-slate-500 italic">Ingen punkter ennå.</p>` : this.sortTileItems(items).map(item => `
                                         <div class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800/90 flex items-start justify-between gap-2 group">
                                             <label class="flex items-start gap-2.5 flex-1 ${editable ? 'cursor-pointer' : 'cursor-not-allowed'} select-none">
                                                 <input type="checkbox" ${item.done ? 'checked' : ''} ${editable ? `onchange="app.toggleTileItem('${tile.id}', '${item.id}')"` : 'disabled'} class="mt-0.5 w-4 h-4 rounded accent-amber-500 shrink-0">
                                                 <div class="space-y-1">
                                                     <div class="text-xs leading-snug ${item.done ? 'line-through text-slate-500' : 'text-slate-200'}">${item.text}</div>
                                                     <div class="flex flex-wrap items-center gap-1.5">
-                                                        ${item.due ? `<span class="px-1.5 py-0.5 rounded bg-slate-900 text-[10px] font-mono text-slate-400 border border-slate-800">⏰ ${item.due}</span>` : ''}
+                                                        ${editable && !(item.done && !item.dueAt && !item.due) ? `
+                                                        <span class="relative inline-flex" onclick="event.preventDefault(); event.stopPropagation(); const i = this.querySelector('input'); try { i.showPicker(); } catch (err) { i.focus(); }">
+                                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono border ${(item.dueAt || item.due) ? this.dueBadgeClass(item) : 'bg-slate-900 text-slate-500 border-slate-800 border-dashed'}">${this.dueState(item) === 'overdue' ? '⚠️' : '⏰'} ${(item.dueAt || item.due) ? this.formatDue(item) : 'Sett frist'}</span>
+                                                            <input type="datetime-local" value="${item.dueAt || ''}" onchange="app.setItemDue('${tile.id}', '${item.id}', this.value)" onclick="event.stopPropagation(); try { this.showPicker(); } catch (err) {}" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="Endre frist">
+                                                        </span>` : ((item.dueAt || item.due) ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-mono border ${this.dueBadgeClass(item)}">⏰ ${this.formatDue(item)}</span>` : '')}
                                                         <button type="button" ${editable ? `onclick="event.preventDefault(); app.toggleItemReminder('${tile.id}', '${item.id}')"` : 'disabled'} title="Slå av/på Push-påminnelse" class="px-1.5 py-0.5 rounded text-[10px] font-mono border transition flex items-center gap-1 ${
                                                             item.reminder 
                                                             ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
@@ -2263,7 +2256,7 @@ service cloud.firestore {
                                     <form onsubmit="app.addTileItem(event, '${tile.id}')" class="pt-2 border-t border-slate-800/80 space-y-2">
                                         <input type="text" id="tile-input-text-${tile.id}" required placeholder="Nytt punkt i denne flisen..." class="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 outline-none">
                                         <div class="flex items-center justify-between gap-2">
-                                            <input type="text" id="tile-input-due-${tile.id}" placeholder="Frist (f.eks. Fredag 18:00)" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1 text-[11px] text-slate-300 font-mono outline-none">
+                                            <input type="datetime-local" id="tile-input-due-${tile.id}" title="Frist (valgfri)" class="flex-1 min-w-0 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-[11px] text-slate-300 font-mono outline-none [color-scheme:dark]">
                                             <label class="flex items-center gap-1 text-[11px] text-slate-400 cursor-pointer select-none">
                                                 <input type="checkbox" id="tile-input-rem-${tile.id}" class="rounded accent-amber-500">
                                                 <span>🔔 Push</span>
@@ -2387,7 +2380,7 @@ service cloud.firestore {
                     id: 'ti-' + Date.now(),
                     text,
                     done: false,
-                    due: dueEl.value.trim() || '',
+                    dueAt: dueEl.value || undefined,
                     reminder: remEl.checked
                 });
                 p.updatedAt = 'Akkurat nå';
@@ -2418,7 +2411,8 @@ service cloud.firestore {
                     this.saveToStorage();
                     this.renderProjectDetail();
                     if (item.reminder) {
-                        this.triggerPushBanner('Påminnelse aktivert', `Du vil bli varslet om: "${item.text}" (${item.due || 'Ingen frist satt'})`);
+                        delete item.notifiedAt;
+                        this.triggerPushBanner('Påminnelse aktivert', `Du blir varslet om: "${item.text}" (${this.formatDue(item) || 'Ingen frist satt'}). Tips: legg den i kalenderen fra 🔔-menyen for varsel når appen er lukket.`);
                     }
                 }
             },
@@ -2561,6 +2555,223 @@ service cloud.firestore {
             },
 
             // ==========================================
+            // DEADLINES: item.dueAt = local date-time "YYYY-MM-DDTHH:mm"
+            // ==========================================
+            _pad(n) { return String(n).padStart(2, '0'); },
+            toLocalIso(d) {
+                return `${d.getFullYear()}-${this._pad(d.getMonth() + 1)}-${this._pad(d.getDate())}T${this._pad(d.getHours())}:${this._pad(d.getMinutes())}`;
+            },
+            parseDueAt(v) {
+                if (!v) return null;
+                const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(v);
+                if (!m) return null;
+                return new Date(+m[1], +m[2] - 1, +m[3], m[4] ? +m[4] : 9, m[5] ? +m[5] : 0);
+            },
+            // Converts old free-text deadlines ("I morgen 18:00", "Fredag 20:00", "16. nov") to a date
+            parseLegacyDue(text, ref = new Date()) {
+                const t = String(text || '').trim().toLowerCase();
+                if (!t || /^(utført|snarest|ferdig|-|—)$/.test(t)) return null;
+                // Time: "18:00" or "kl 18.00" (a bare "24.12" is a date, not a time)
+                const tm = /(\d{1,2}):(\d{2})/.exec(t) || /kl\.?\s*(\d{1,2})[.:](\d{2})/.exec(t);
+                const hh = tm ? +tm[1] : (/kveld/.test(t) ? 20 : 9);
+                const mm = tm ? +tm[2] : 0;
+                const base = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), hh, mm);
+                const days = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag'];
+                if (/^i dag|^i kveld/.test(t)) return this.toLocalIso(base);
+                if (/^i morgen/.test(t)) { base.setDate(base.getDate() + 1); return this.toLocalIso(base); }
+                if (/^i overmorgen/.test(t)) { base.setDate(base.getDate() + 2); return this.toLocalIso(base); }
+                const wd = days.findIndex(d => t.startsWith(d) || t.startsWith(d.slice(0, 3) + ' ') || t === d.slice(0, 3));
+                if (wd >= 0) {
+                    let diff = (wd - ref.getDay() + 7) % 7;
+                    if (diff === 0 && base < ref) diff = 7;
+                    base.setDate(base.getDate() + diff);
+                    return this.toLocalIso(base);
+                }
+                const months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
+                const dm = /(\d{1,2})\.\s*([a-zæøå]{3})[a-zæøå]*\.?(?:\s+(\d{4}))?/.exec(t);
+                if (dm) {
+                    const mi = months.indexOf(dm[2]);
+                    if (mi >= 0) {
+                        const d = new Date(dm[3] ? +dm[3] : ref.getFullYear(), mi, +dm[1], hh, mm);
+                        return this.toLocalIso(d);
+                    }
+                }
+                const num = /^(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?(?!\d)/.exec(t);
+                if (num) {
+                    let y = num[3] ? +num[3] : ref.getFullYear();
+                    if (y < 100) y += 2000;
+                    return this.toLocalIso(new Date(y, +num[2] - 1, +num[1], hh, mm));
+                }
+                return null;
+            },
+            // Moves every legacy text deadline to dueAt (keeps the text if it cannot be understood)
+            migrateDueDates() {
+                let changed = false;
+                this.projects.forEach(p => {
+                    (p.tiles || []).forEach(tile => (tile.items || []).forEach(item => {
+                        if (item.dueAt || !item.due) return;
+                        const iso = this.parseLegacyDue(item.due);
+                        if (iso) { item.dueAt = iso; delete item.due; changed = true; }
+                        else if (/^(utført|snarest|ferdig)$/i.test(String(item.due).trim())) { delete item.due; changed = true; }
+                    }));
+                });
+                if (changed) {
+                    this.projects.filter(p => p.isSample).forEach(p => this.rememberSignature(p));
+                    this.saveToStorage(false);
+                }
+                return changed;
+            },
+            // "I dag 18:00", "I morgen 18:00", "Fre 19:00", "16. nov 19:00"
+            formatDue(item) {
+                const d = this.parseDueAt(item.dueAt);
+                if (!d) return item.due || '';
+                const now = new Date();
+                const day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                const diff = Math.round((dDay - day0) / 86400000);
+                const time = `${this._pad(d.getHours())}:${this._pad(d.getMinutes())}`;
+                const wd = ['Søn', 'Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør'][d.getDay()];
+                const months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
+                if (diff === 0) return `I dag ${time}`;
+                if (diff === 1) return `I morgen ${time}`;
+                if (diff === -1) return `I går ${time}`;
+                if (diff > 1 && diff < 7) return `${wd} ${time}`;
+                const year = d.getFullYear() !== now.getFullYear() ? ` ${d.getFullYear()}` : '';
+                return `${d.getDate()}. ${months[d.getMonth()]}${year} ${time}`;
+            },
+            // 'overdue' | 'today' | 'soon' (within 3 days) | 'later' | 'none'
+            dueState(item) {
+                const d = this.parseDueAt(item.dueAt);
+                if (!d) return 'none';
+                if (item.done) return 'later';
+                const now = new Date();
+                if (d < now) return 'overdue';
+                const endToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                if (d <= endToday) return 'today';
+                if (d - now < 3 * 86400000) return 'soon';
+                return 'later';
+            },
+            dueBadgeClass(item) {
+                switch (this.dueState(item)) {
+                    case 'overdue': return 'bg-red-950/70 text-red-300 border-red-800/70';
+                    case 'today': return 'bg-amber-950/70 text-amber-300 border-amber-700/70';
+                    case 'soon': return 'bg-sky-950/60 text-sky-300 border-sky-800/60';
+                    default: return 'bg-slate-900 text-slate-400 border-slate-800';
+                }
+            },
+            // Open items with a date first (earliest first), then open items without a date, then done items
+            sortTileItems(items) {
+                return items.map((it, i) => ({ it, i })).sort((a, b) => {
+                    if (!!a.it.done !== !!b.it.done) return a.it.done ? 1 : -1;
+                    const da = this.parseDueAt(a.it.dueAt), db = this.parseDueAt(b.it.dueAt);
+                    if (!a.it.done && da && db) return da - db;
+                    if (!a.it.done && da && !db) return -1;
+                    if (!a.it.done && !da && db) return 1;
+                    return a.i - b.i;
+                }).map(x => x.it);
+            },
+            setItemDue(tileId, itemId, value) {
+                if (!this.canEdit()) return;
+                const p = this.getCurrentProject();
+                const tile = p.tiles.find(t => t.id === tileId);
+                const item = tile?.items?.find(i => i.id === itemId);
+                if (!item) return;
+                if (value) { item.dueAt = value; delete item.due; }
+                else { delete item.dueAt; delete item.due; }
+                delete item.notifiedAt;
+                p.updatedAt = 'Akkurat nå';
+                this.saveToStorage(false);
+                this.renderProjectDetail();
+            },
+
+            // ---- Calendar export (.ics) – gives real alarms on iPhone/PC even when the app is closed ----
+            _icsEscape(v) {
+                return String(v || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+            },
+            _icsDate(d) {
+                return `${d.getFullYear()}${this._pad(d.getMonth() + 1)}${this._pad(d.getDate())}T${this._pad(d.getHours())}${this._pad(d.getMinutes())}00`;
+            },
+            buildIcs(entries) {
+                const stamp = new Date();
+                const utc = `${stamp.getUTCFullYear()}${this._pad(stamp.getUTCMonth() + 1)}${this._pad(stamp.getUTCDate())}T${this._pad(stamp.getUTCHours())}${this._pad(stamp.getUTCMinutes())}00Z`;
+                const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Verksted//Hobbyplanlegger//NO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+                entries.forEach(e => {
+                    const d = this.parseDueAt(e.dueAt);
+                    if (!d) return;
+                    const end = new Date(d.getTime() + 30 * 60000);
+                    lines.push(
+                        'BEGIN:VEVENT',
+                        `UID:${e.itemId}@verksted-planlegger`,
+                        `DTSTAMP:${utc}`,
+                        `DTSTART:${this._icsDate(d)}`,
+                        `DTEND:${this._icsDate(end)}`,
+                        `SUMMARY:${this._icsEscape(e.text)}`,
+                        `DESCRIPTION:${this._icsEscape(`${e.projectTitle} • ${e.tileTitle}`)}`,
+                        'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${this._icsEscape(e.text)}`, 'TRIGGER:-PT30M', 'END:VALARM',
+                        'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${this._icsEscape(e.text)}`, 'TRIGGER:PT0M', 'END:VALARM',
+                        'END:VEVENT'
+                    );
+                });
+                lines.push('END:VCALENDAR');
+                return lines.join('\r\n');
+            },
+            downloadIcs(entries, filename) {
+                const withDate = entries.filter(e => this.parseDueAt(e.dueAt));
+                if (withDate.length === 0) {
+                    this.showToast('Ingen påminnelser med dato å legge i kalenderen', 'amber');
+                    return;
+                }
+                const blob = new Blob([this.buildIcs(withDate)], { type: 'text/calendar;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 5000);
+                this.showToast(`${withDate.length} påminnelse${withDate.length > 1 ? 'r' : ''} sendt til kalenderen`, 'emerald');
+            },
+            addReminderToCalendar(itemId) {
+                const r = this.getAllActiveReminders(true).find(x => x.itemId === itemId);
+                if (r) this.downloadIcs([r], 'Verksted-paaminnelse.ics');
+            },
+            addAllRemindersToCalendar() {
+                this.downloadIcs(this.getAllActiveReminders(), 'Verksted-paaminnelser.ics');
+            },
+
+            // ---- In-app alarm while the app is open ----
+            checkDueReminders() {
+                const now = new Date();
+                let changed = false;
+                // Demo projects never alert (and must not be turned into real projects by the notifiedAt flag)
+                this.projects.filter(p => !p.isSample).forEach(p => (p.tiles || []).forEach(tile => (tile.items || []).forEach(item => {
+                    if (!item.reminder || item.done || item.notifiedAt) return;
+                    const d = this.parseDueAt(item.dueAt);
+                    if (!d || d > now) return;
+                    item.notifiedAt = now.getTime();
+                    changed = true;
+                    // Only alert for deadlines that passed within the last 12 hours
+                    if (now - d > 12 * 3600000) return;
+                    this.triggerPushBanner(`⏰ ${p.title}`, `${item.text} (${this.formatDue(item)})`);
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        try {
+                            if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                                navigator.serviceWorker.ready.then(reg => reg.showNotification(`Verksted: ${p.title}`, { body: item.text, tag: item.id, icon: 'icons/icon-192.png' }));
+                            } else {
+                                new Notification(`Verksted: ${p.title}`, { body: item.text });
+                            }
+                        } catch (e) {}
+                    }
+                })));
+                if (changed) {
+                    this.saveToStorage(false);
+                    this.renderDashboard();
+                    if (this.currentProjectId) this.renderProjectDetail();
+                }
+            },
+
+            // ==========================================
             // PUSH NOTIFICATIONS & REMINDERS CENTER
             // ==========================================
             getAllActiveReminders() {
@@ -2573,20 +2784,35 @@ service cloud.firestore {
                                     projectId: p.id,
                                     projectTitle: p.title,
                                     tileTitle: tile.title,
+                                    itemId: item.id,
                                     text: item.text,
-                                    due: item.due || 'Snarest'
+                                    dueAt: item.dueAt || null,
+                                    state: this.dueState(item),
+                                    due: this.formatDue(item) || 'Ingen frist'
                                 });
                             }
                         });
                     });
                 });
-                return list;
+                // Earliest first, reminders without a date last
+                return list.sort((a, b) => {
+                    const da = this.parseDueAt(a.dueAt), db = this.parseDueAt(b.dueAt);
+                    if (da && db) return da - db;
+                    if (da) return -1;
+                    if (db) return 1;
+                    return 0;
+                });
             },
 
             updateReminderCountBadge() {
-                const count = this.getAllActiveReminders().length;
+                const reminders = this.getAllActiveReminders();
+                const overdue = reminders.filter(r => r.state === 'overdue').length;
                 const badge = document.getElementById('nav-reminder-count');
-                if (badge) badge.textContent = count;
+                if (badge) {
+                    badge.textContent = reminders.length;
+                    badge.className = `px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${overdue ? 'bg-red-500 text-white' : 'bg-amber-500 text-slate-950'}`;
+                    badge.title = overdue ? `${overdue} forfalt` : '';
+                }
             },
 
             openNotificationsModal() {
@@ -2597,18 +2823,35 @@ service cloud.firestore {
                 if (reminders.length === 0) {
                     container.innerHTML = `<div class="p-6 rounded-xl bg-slate-950 border border-slate-800 text-center text-xs text-slate-500">Ingen aktive påminnelser. Slå på 🔔 Varsel på et sjekkpunkt i xTiles-tavlen!</div>`;
                 } else {
-                    container.innerHTML = reminders.map(r => `
-                        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3">
-                            <div class="space-y-0.5">
-                                <div class="text-[11px] font-mono text-amber-400">${r.projectTitle} • ${r.tileTitle}</div>
-                                <div class="text-xs font-semibold text-white">${r.text}</div>
-                                <div class="text-[11px] text-slate-400">Frist: ${r.due}</div>
-                            </div>
-                            <button onclick="app.triggerPushBanner('${r.projectTitle}', '${r.text} (Frist: ${r.due})')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 text-xs font-medium transition shrink-0">
-                                Test varsel
-                            </button>
-                        </div>
-                    `).join('');
+                    const groups = [
+                        ['overdue', '⚠️ Forfalt', 'text-red-300'],
+                        ['today', 'I dag', 'text-amber-300'],
+                        ['soon', 'Neste 3 dager', 'text-sky-300'],
+                        ['later', 'Senere', 'text-slate-300'],
+                        ['none', 'Uten frist', 'text-slate-500']
+                    ];
+                    const hasDated = reminders.some(r => r.dueAt);
+                    container.innerHTML = (hasDated ? `
+                        <button onclick="app.addAllRemindersToCalendar()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold transition">
+                            📅 Legg alle påminnelser i kalenderen (varsel 30 min før)
+                        </button>` : '') + groups.map(([key, label, color]) => {
+                        const rows = reminders.filter(r => r.state === key);
+                        if (rows.length === 0) return '';
+                        return `
+                            <div class="pt-2 text-[11px] font-bold uppercase tracking-wider ${color}">${label}</div>
+                            ${rows.map(r => `
+                            <div class="p-3.5 rounded-xl bg-slate-950 border ${key === 'overdue' ? 'border-red-900/70' : 'border-slate-800'} flex items-center justify-between gap-3">
+                                <div class="space-y-0.5 min-w-0">
+                                    <div class="text-[11px] font-mono text-amber-400 truncate">${r.projectTitle} • ${r.tileTitle}</div>
+                                    <div class="text-xs font-semibold text-white">${r.text}</div>
+                                    <div class="text-[11px] font-mono ${color}">⏰ ${r.due}</div>
+                                </div>
+                                <div class="flex flex-col gap-1.5 shrink-0">
+                                    <button onclick="app.closeNotificationsModal(); app.openProject('${r.projectId}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition">Åpne</button>
+                                    ${r.dueAt ? `<button onclick="app.addReminderToCalendar('${r.itemId}')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 text-xs font-medium transition">📅 Kalender</button>` : ''}
+                                </div>
+                            </div>`).join('')}`;
+                    }).join('');
                 }
                 document.getElementById('modal-notifications').classList.remove('hidden');
             },
@@ -2656,7 +2899,7 @@ service cloud.firestore {
 
             sendTestPushNotification() {
                 const reminders = this.getAllActiveReminders();
-                const sample = reminders[0] || { projectTitle: 'Arbeidsbenk', text: 'Påføre strøk 1 med Benkeolje', due: 'I kveld 20:00' };
+                const sample = reminders[0] || { projectTitle: 'Verksted', text: 'Dette er et testvarsel', due: 'Nå' };
 
                 // Always show visual iOS/PWA push banner so user sees immediate feedback inside preview
                 this.triggerPushBanner(
@@ -3474,7 +3717,7 @@ Avbryt = legg linjene til nederst`)) {
                             type: 'checklist',
                             color: 'amber',
                             items: [
-                                { id: 'ti-' + Date.now(), text: 'Kartlegge mål og materialliste (BOM)', done: false, due: 'I dag', reminder: true }
+                                { id: 'ti-' + Date.now(), text: 'Kartlegge mål og materialliste (BOM)', done: false, dueAt: this.toLocalIso(new Date(new Date().setHours(18, 0, 0, 0))), reminder: true }
                             ]
                         }
                     ],
@@ -3579,68 +3822,27 @@ Avbryt = legg linjene til nederst`)) {
                 this.showToast('Sikkerhetsregler kopiert til utklippstavlen!', 'emerald');
             },
 
-            downloadProjectFile(filename) {
+            // Downloads the real published files (index.html, manifest.json, sw.js, firestore.rules)
+            async downloadProjectFile(filename) {
+                const mimes = {
+                    'index.html': 'text/html;charset=utf-8',
+                    'manifest.json': 'application/json;charset=utf-8',
+                    'sw.js': 'application/javascript;charset=utf-8',
+                    'firestore.rules': 'text/plain;charset=utf-8'
+                };
+                const mime = mimes[filename] || 'text/plain;charset=utf-8';
                 let content = '';
-                let mime = 'text/plain;charset=utf-8';
-
-                if (filename === 'index.html') {
-                    // Close all modals before serializing the DOM so downloaded index.html never starts with an open modal
-                    this.closeAllModals();
-                    content = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-                    mime = 'text/html;charset=utf-8';
-                } else if (filename === 'manifest.json') {
-                    content = JSON.stringify({
-                        name: "Verksted & Hobbyplanlegger",
-                        short_name: "Verksted",
-                        description: "Planlegger for hobbysnekring, 3D-printing og RC-bygging med offline-støtte",
-                        start_url: "./index.html",
-                        display: "standalone",
-                        background_color: "#020617",
-                        theme_color: "#f59e0b",
-                        orientation: "portrait-primary",
-                        icons: [
-                            {
-                                src: "https://placehold.co/192x192/f59e0b/020617.png?text=VP",
-                                sizes: "192x192",
-                                type: "image/png"
-                            },
-                            {
-                                src: "https://placehold.co/512x512/f59e0b/020617.png?text=Verksted",
-                                sizes: "512x512",
-                                type: "image/png"
-                            }
-                        ]
-                    }, null, 2);
-                    mime = 'application/json;charset=utf-8';
-                } else if (filename === 'sw.js') {
-                    content = `const CACHE_NAME = 'verksted-pwa-v1';
-const ASSETS = ['./', './index.html', './manifest.json'];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).catch(() => caches.match('./index.html'));
-    })
-  );
-});`;
-                    mime = 'application/javascript;charset=utf-8';
-                } else if (filename === 'firestore.rules') {
-                    content = document.getElementById('firestore-rules-code').textContent;
+                try {
+                    const res = await fetch('./' + filename, { cache: 'no-store' });
+                    if (!res.ok) throw new Error(res.status);
+                    content = await res.text();
+                } catch (err) {
+                    if (filename === 'firestore.rules') {
+                        content = document.getElementById('firestore-rules-code').textContent;
+                    } else {
+                        this.showToast(`Kunne ikke hente ${filename} (krever nett)`, 'amber');
+                        return;
+                    }
                 }
 
                 const blob = new Blob([content], { type: mime });
@@ -3989,6 +4191,7 @@ self.addEventListener('fetch', (event) => {
                 }
                 toUpload.forEach(p => window.fbBridge.saveProject(p));
                 // Old-format projects from the cloud may still carry inline images
+                app.migrateDueDates();
                 app.migrateInlineMedia().then(() => {
                     fetchMissingMedia(app.projects);
                     if (complete) app.garbageCollectMedia();

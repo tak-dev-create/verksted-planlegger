@@ -1,6 +1,12 @@
 // Bump this version on every release so iPhone/PC pick up the new files
-const CACHE_NAME = 'verksted-pwa-v7';
-const ASSETS = ['./', './index.html', './manifest.json'];
+const CACHE_NAME = 'verksted-pwa-v8';
+const ASSETS = [
+  './', './index.html', './manifest.json',
+  './css/app.css',
+  './vendor/xlsx-0.20.2.full.min.js',
+  './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
+  './icons/apple-touch-icon.png', './icons/favicon-32.png'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
@@ -22,7 +28,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
 
   // Never intercept Firebase / Google API traffic – Firestore handles its own offline cache
-  if (/googleapis\.com|firebaseio\.com|firebaseapp\.com|identitytoolkit|securetoken/.test(url.hostname)) return;
+  if (/googleapis\.com|firebaseio\.com|firebaseapp\.com|identitytoolkit|securetoken|apis\.google\.com|accounts\.google\.com/.test(url.hostname)) return;
 
   // App pages: network first, so new versions show up immediately; cache as offline fallback
   if (req.mode === 'navigate' || (url.origin === location.origin && url.pathname.endsWith('.html'))) {
