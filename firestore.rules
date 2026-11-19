@@ -1,34 +1,85 @@
 rules_version = '2';
+
+// Access model
+//   App owners (hard-coded below): full access to everything + user administration.
+//   users/{email}.access:
+//     'full'     – can see, edit and create all projects (no user administration)
+//     'own'      – can create own projects + projects they are invited to
+//     'projects' – only projects they are invited to (default for everyone without a user doc)
+//     'blocked'  – no access at all, even to projects they are invited to
+//   Project membership: projects/{id}.memberEmails + permissions[email].role ('read' | 'write')
+//   Everyone must be signed in with a VERIFIED e-mail address.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /projects/{projectId} {
-      function isSignedIn() { return request.auth != null && request.auth.token.email != null; }
-      function userEmail() { return request.auth.token.email.lower(); }
-      function isOwner() { return isSignedIn() && resource.data.ownerEmail == userEmail(); }
-      function isMember() { return isSignedIn() && (userEmail() in resource.data.memberEmails); }
-      function canWrite() {
-        return isOwner() || (isMember() && resource.data.permissions[userEmail()].role == 'write');
-      }
-      allow read: if isOwner() || isMember();
-      allow create: if isSignedIn() && request.resource.data.ownerEmail == userEmail();
-      allow update: if isOwner() || (canWrite()
-        && request.resource.data.permissions == resource.data.permissions
-        && request.resource.data.ownerEmail == resource.data.ownerEmail);
-      allow delete: if isOwner();
 
-      // Images for a project: same access as the project itself
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.email is string
+        && request.auth.token.email_verified == true;
+    }
+    function me() { return request.auth.token.email.lower(); }
+    function isAppOwner() {
+      return signedIn() && me() in ['tor-arild@karlsen.no', 'takarlsen@gmail.com'];
+    }
+    function userPath() { return /databases/$(database)/documents/users/$(me()); }
+    function accessLevel() {
+      return exists(userPath()) ? get(userPath()).data.access : 'projects';
+    }
+    function active() { return isAppOwner() || (signedIn() && accessLevel() != 'blocked'); }
+    function isFull() { return isAppOwner() || (signedIn() && accessLevel() == 'full'); }
+    function canCreate() { return isFull() || (active() && accessLevel() == 'own'); }
+
+    // ---- User administration (app owners only) ----
+    match /users/{email} {
+      allow read: if isAppOwner() || (signedIn() && email == me());
+      allow create, update: if isAppOwner()
+        && email == email.lower()
+        && request.resource.data.keys().hasOnly(['access', 'name', 'updatedAt', 'updatedBy'])
+        && request.resource.data.access in ['full', 'own', 'projects', 'blocked']
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() <= 100));
+      allow delete: if isAppOwner();
+    }
+
+    // ---- Projects ----
+    match /projects/{projectId} {
+      function isOwner() { return signedIn() && resource.data.ownerEmail == me(); }
+      function isMember() { return signedIn() && me() in resource.data.memberEmails; }
+      function isWriter() { return isMember() && resource.data.permissions[me()].role == 'write'; }
+      function validProject() {
+        return request.resource.data.ownerEmail is string
+          && request.resource.data.memberEmails is list
+          && request.resource.data.memberEmails.size() <= 50
+          && request.resource.data.permissions is map;
+      }
+      function unchanged(field) {
+        return request.resource.data.get(field, null) == resource.data.get(field, null);
+      }
+
+      allow read: if active() && (isFull() || isOwner() || isMember());
+      allow create: if canCreate() && validProject() && request.resource.data.ownerEmail == me();
+      allow update: if active() && validProject() && (
+        isFull()
+        || (isOwner() && unchanged('ownerEmail'))
+        || (isWriter() && unchanged('ownerEmail') && unchanged('memberEmails') && unchanged('permissions') && unchanged('collaborators'))
+      );
+      allow delete: if active() && (isFull() || isOwner());
+
+      // Images: same access as the project itself
       match /media/{mediaId} {
-        function parentData() {
-          return get(/databases/$(database)/documents/projects/$(projectId)).data;
-        }
-        function parentOwner() { return isSignedIn() && parentData().ownerEmail == userEmail(); }
-        function parentMember() { return isSignedIn() && (userEmail() in parentData().memberEmails); }
-        function parentWriter() {
-          return parentOwner() || (parentMember() && parentData().permissions[userEmail()].role == 'write');
-        }
-        allow read: if parentOwner() || parentMember();
-        allow write: if parentWriter();
+        function parent() { return get(/databases/$(database)/documents/projects/$(projectId)).data; }
+        function parentOwner() { return signedIn() && parent().ownerEmail == me(); }
+        function parentMember() { return signedIn() && me() in parent().memberEmails; }
+        function parentWriter() { return parentMember() && parent().permissions[me()].role == 'write'; }
+        allow read: if active() && (isFull() || parentOwner() || parentMember());
+        allow create, update: if active() && (isFull() || parentOwner() || parentWriter())
+          && request.resource.data.keys().hasOnly(['data', 'projectId', 'createdAt'])
+          && request.resource.data.data is string
+          && request.resource.data.data.size() < 1048000
+          && request.resource.data.data.matches('data:image/.*');
+        allow delete: if active() && (isFull() || parentOwner() || parentWriter());
       }
     }
+
+    // Everything else is closed
   }
 }

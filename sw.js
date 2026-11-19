@@ -1,5 +1,5 @@
 // Bump this version on every release so iPhone/PC pick up the new files
-const CACHE_NAME = 'verksted-pwa-v8';
+const CACHE_NAME = 'verksted-pwa-v9';
 const ASSETS = [
   './', './index.html', './manifest.json',
   './css/app.css',
@@ -9,7 +9,11 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  // cache: 'reload' bypasses the browser's HTTP cache so a new release really gets new files
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      cache.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' }))))
+  );
   self.skipWaiting();
 });
 
@@ -27,24 +31,30 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Never intercept Firebase / Google API traffic – Firestore handles its own offline cache
+  // Never intercept Firebase / Google sign-in traffic – Firestore handles its own offline cache
   if (/googleapis\.com|firebaseio\.com|firebaseapp\.com|identitytoolkit|securetoken|apis\.google\.com|accounts\.google\.com/.test(url.hostname)) return;
+  // Local emulators (development only)
+  if (url.hostname === '127.0.0.1' && (url.port === '8080' || url.port === '9099')) return;
 
-  // App pages: network first, so new versions show up immediately; cache as offline fallback
-  if (req.mode === 'navigate' || (url.origin === location.origin && url.pathname.endsWith('.html'))) {
+  // The app's own files: network first (always newest), cache as offline fallback
+  if (url.origin === location.origin) {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put('./index.html', copy));
+          if (res && res.ok) {
+            const copy = res.clone();
+            const key = req.mode === 'navigate' ? './index.html' : req;
+            caches.open(CACHE_NAME).then((c) => c.put(key, copy));
+          }
           return res;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => caches.match(req, { ignoreSearch: true })
+          .then((hit) => hit || (req.mode === 'navigate' ? caches.match('./index.html') : undefined)))
     );
     return;
   }
 
-  // Everything else (CDN scripts, fonts, icons): cache first, refresh in background
+  // Versioned CDN files (Firebase SDK, fonts, ExcelJS): cache first, refresh in background
   event.respondWith(
     caches.match(req).then((cached) => {
       const network = fetch(req)

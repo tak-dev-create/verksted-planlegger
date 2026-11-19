@@ -37,6 +37,12 @@
             background-size: 20px 20px;
         }
 
+        /* Access-dependent UI (classes set on <body> by app.applyAccessUI) */
+        body.no-create .js-create-only,
+        body:not(.is-admin) .js-admin-only,
+        body.no-manage .js-manage-only,
+        body.no-edit .js-edit-only { display: none !important; }
+
         /* Disable image dragging/saving when protected */
         .no-download-img {
             -webkit-touch-callout: none;
@@ -45,7 +51,59 @@
         }
     </style>
 </head>
-<body class="h-full flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-slate-950 pb-20 md:pb-0">
+<body class="h-full flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-slate-950 pb-20 md:pb-0 no-create no-manage">
+    <!-- ========================================== -->
+    <!-- INNLOGGING (SPERRE FOR UAUTORISERTE)       -->
+    <!-- ========================================== -->
+    <div id="auth-gate" class="fixed inset-0 z-[100] bg-slate-950 flex items-start sm:items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-sm space-y-6 py-10">
+            <div class="flex flex-col items-center gap-3 text-center">
+                <img src="icons/icon-192.png" alt="" class="w-16 h-16 rounded-2xl shadow-lg">
+                <div>
+                    <h1 class="text-xl font-bold text-white">Verksted &amp; Hobbyplanlegger</h1>
+                    <p class="text-xs text-slate-400 mt-1">Kun for inviterte brukere</p>
+                </div>
+            </div>
+
+            <div id="gate-loading" class="text-center text-sm text-slate-400">Laster…</div>
+
+            <form id="gate-login" onsubmit="app.gateLogin(event, 'login')" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div>
+                    <label for="gate-email" class="block text-xs text-slate-400 mb-1">E-post</label>
+                    <input type="email" id="gate-email" required autocomplete="username" class="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 rounded-xl px-3.5 py-3 text-sm text-white outline-none">
+                </div>
+                <div>
+                    <label for="gate-pass" class="block text-xs text-slate-400 mb-1">Passord</label>
+                    <input type="password" id="gate-pass" required minlength="8" autocomplete="current-password" class="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 rounded-xl px-3.5 py-3 text-sm text-white outline-none">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-3 rounded-xl text-sm transition">Logg inn</button>
+                <div class="flex items-center justify-between gap-2 text-xs">
+                    <button type="button" onclick="app.gateLogin(event, 'register')" class="text-sky-400 hover:text-sky-300 underline">Ny bruker (invitert)</button>
+                    <button type="button" onclick="app.gateResetPassword()" class="text-slate-400 hover:text-slate-200 underline">Glemt passord?</button>
+                </div>
+                <div class="flex items-center gap-3 py-1 text-[11px] text-slate-500"><span class="flex-1 h-px bg-slate-800"></span>eller<span class="flex-1 h-px bg-slate-800"></span></div>
+                <button type="button" onclick="app.loginWithGoogle()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 rounded-xl text-sm transition">Logg inn med Google</button>
+                <p class="text-[11px] text-slate-500 leading-relaxed text-center pt-1">Du må være invitert til et prosjekt eller gitt tilgang av eieren for å se noe. Bruk samme e-post som invitasjonen ble sendt til.</p>
+            </form>
+
+            <div id="gate-unverified" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 text-center">
+                <div class="text-3xl">✉️</div>
+                <h2 class="text-base font-semibold text-white">Bekreft e-postadressen din</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">Vi har sendt en lenke til <strong id="gate-unverified-email" class="text-slate-200"></strong>. Åpne lenken, og trykk deretter «Jeg har bekreftet». Sjekk søppelpost om du ikke finner den.</p>
+                <button type="button" onclick="app.gateRefreshVerification()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-3 rounded-xl text-sm transition">Jeg har bekreftet</button>
+                <button type="button" onclick="app.gateResendVerification()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl text-xs transition">Send ny bekreftelses-e-post</button>
+                <button type="button" onclick="app.logoutFirebase()" class="w-full text-xs text-slate-400 hover:text-slate-200 underline">Logg ut</button>
+            </div>
+
+            <div id="gate-blocked" class="hidden bg-slate-900 border border-red-900/60 rounded-2xl p-5 space-y-3 text-center">
+                <div class="text-3xl">⛔</div>
+                <h2 class="text-base font-semibold text-white">Tilgangen er sperret</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">Kontoen <strong id="gate-blocked-email" class="text-slate-200"></strong> har ikke tilgang til appen. Ta kontakt med eieren om du mener dette er feil.</p>
+                <button type="button" onclick="app.logoutFirebase()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl text-xs transition">Logg ut</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- SIMULATED iOS / WEB PUSH BANNER (For preview testing) -->
     <div id="ios-push-banner" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md transform -translate-y-32 opacity-0 pointer-events-none transition-all duration-300">
@@ -100,8 +158,13 @@
                     <span id="fb-user-label" class="hidden lg:inline font-mono text-[11px]">verksted-planlegger</span>
                 </button>
 
+                <!-- User administration (app owners only) -->
+                <button onclick="app.openAdminModal()" title="Brukere og tilgang" class="js-admin-only px-2.5 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center gap-1.5 text-xs font-medium">
+                    <span>👥</span><span class="hidden sm:inline">Brukere</span>
+                </button>
+
                 <!-- PWA & GitHub File Generator Button -->
-                <button onclick="app.openPwaExportModal()" title="Last ned ferdige filer for GitHub og iOS PWA" class="px-2.5 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 transition flex items-center gap-1.5 text-xs font-semibold">
+                <button onclick="app.openPwaExportModal()" title="Last ned ferdige filer for GitHub og iOS PWA" class="js-admin-only px-2.5 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 transition flex items-center gap-1.5 text-xs font-semibold">
                     <span>📦 PWA / GitHub</span>
                 </button>
 
@@ -117,13 +180,9 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 </button>
 
-                <!-- Reset Demo Data Button -->
-                <button onclick="app.resetDemoData()" title="Tilbakestill eksempeldata" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition text-xs hidden sm:flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                </button>
 
                 <!-- New Project CTA -->
-                <button onclick="app.openNewProjectModal()" class="hidden sm:flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-3.5 py-1.5 rounded-lg text-sm shadow-lg shadow-amber-500/10 transition">
+                <button onclick="app.openNewProjectModal()" class="js-create-only hidden sm:flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-3.5 py-1.5 rounded-lg text-sm shadow-lg shadow-amber-500/10 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                     <span>Nytt prosjekt</span>
                 </button>
@@ -359,24 +418,13 @@
                     </span>
                     <div>
                         <div class="text-xs font-semibold text-white flex items-center gap-2">
-                            <span>Rollesimulator (Forhåndsvis tilgang på dette prosjektet)</span>
+                            <span>Din tilgang til dette prosjektet</span>
                             <span id="active-role-pill" class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-700/60">Eier: Full tilgang</span>
                         </div>
-                        <p class="text-[11px] text-slate-400">Test hvordan inviterte deltakere opplever prosjektet med ulik lese-, skrive- og nedlastingstilgang.</p>
+                        <p id="role-explainer" class="text-[11px] text-slate-400">Tilgangen styres av prosjekteieren og håndheves av sikkerhetsreglene i databasen.</p>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                    <button onclick="app.setSimulatedRole('owner')" id="role-btn-owner" class="px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                        👑 Eier (Full tilgang)
-                    </button>
-                    <button onclick="app.setSimulatedRole('viewer')" id="role-btn-viewer" class="px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                        👁️ Deltaker: Kun lesetilgang
-                    </button>
-                    <button onclick="app.setSimulatedRole('nodownload')" id="role-btn-nodownload" class="px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                        🔒 Deltaker: Uten nedlasting
-                    </button>
-                </div>
             </div>
 
             <!-- Active Restriction Warning Banner (Shown when simulating restricted roles) -->
@@ -385,7 +433,6 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="lock" aria-hidden="true" class="lucide lucide-lock w-4 h-4 shrink-0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     <span id="role-restriction-text"></span>
                 </div>
-                <button onclick="app.setSimulatedRole('owner')" class="underline font-semibold shrink-0">Tilbake til Eier-modus</button>
             </div>
             
             <!-- Project Header Card -->
@@ -409,7 +456,7 @@
 
                     <div class="flex flex-wrap items-center gap-3 sm:gap-4 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
                         <!-- Share / Access Management Button -->
-                        <button onclick="app.openShareModal()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-semibold transition">
+                        <button onclick="app.openShareModal()" class="js-manage-only flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-semibold transition">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" aria-hidden="true" class="lucide lucide-users w-4 h-4"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
                             <span>Del / Tilgang</span>
                             <span id="detail-collab-count" class="px-1.5 py-0.5 rounded-full bg-sky-500/30 text-white font-mono text-[10px]">0</span>
@@ -426,7 +473,7 @@
                             <div class="text-xs text-slate-400">Materialkostnad</div>
                             <div id="detail-cost-text" class="text-lg font-bold font-mono text-white">0 kr</div>
                         </div>
-                        <button id="btn-delete-project" onclick="app.deleteCurrentProject()" title="Slett prosjekt" class="ml-auto md:ml-1 p-2 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-slate-700 transition">
+                        <button id="btn-delete-project" onclick="app.deleteCurrentProject()" title="Slett prosjekt" class="js-manage-only ml-auto md:ml-1 p-2 rounded-lg bg-slate-800 hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-slate-700 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
@@ -459,7 +506,7 @@
                         <span>Byggelogg &amp; Kamera</span>
                         <span id="badge-count-log" class="px-1.5 py-0.2 rounded-full text-[11px] font-mono bg-slate-800 text-slate-300">0</span>
                     </button>
-                    <button onclick="app.openShareModal()" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap flex items-center gap-2 transition bg-slate-950 text-sky-300 hover:bg-slate-800 border border-slate-800 ml-auto">
+                    <button onclick="app.openShareModal()" class="js-manage-only px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap flex items-center gap-2 transition bg-slate-950 text-sky-300 hover:bg-slate-800 border border-slate-800 ml-auto">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield" aria-hidden="true" class="lucide lucide-shield w-4 h-4"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
                         <span>Tilgangsstyring</span>
                     </button>
@@ -686,7 +733,7 @@
             <span class="text-[10px] font-medium">Prosjekter</span>
         </button>
 
-        <button onclick="app.openNewProjectModal()" class="flex items-center justify-center w-12 h-12 -mt-5 rounded-full bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30 border-4 border-slate-950">
+        <button onclick="app.openNewProjectModal()" class="js-create-only flex items-center justify-center w-12 h-12 -mt-5 rounded-full bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30 border-4 border-slate-950">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
         </button>
 
@@ -905,6 +952,46 @@
         </div>
     </div>
 
+
+    <!-- ========================================== -->
+    <!-- BRUKERADMINISTRASJON (KUN APP-EIERE)       -->
+    <!-- ========================================== -->
+    <div id="modal-admin" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-start sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-slate-900 border border-slate-800 sm:rounded-2xl max-w-3xl w-full h-full sm:h-auto sm:max-h-[92vh] overflow-y-auto p-4 sm:p-6 space-y-5 shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">Kun app-eiere</span>
+                    <h3 class="text-lg font-bold text-white mt-1">👥 Brukere og tilgang</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Alle som er invitert til et prosjekt dukker opp her automatisk. Åpne eller steng prosjekter per bruker, eller gi tilgang til hele appen.</p>
+                </div>
+                <button onclick="app.closeAdminModal()" class="text-slate-400 hover:text-white p-1 text-lg">✕</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-400 bg-slate-950 border border-slate-800 rounded-xl p-3">
+                <div><span class="text-amber-300 font-semibold">👑 App-eier</span> – alt, inkl. brukere</div>
+                <div><span class="text-emerald-300 font-semibold">🌐 Hele appen</span> – alle prosjekter, kan opprette</div>
+                <div><span class="text-sky-300 font-semibold">📁 Egne prosjekter</span> – kan opprette egne + inviterte</div>
+                <div><span class="text-slate-200 font-semibold">🔗 Kun inviterte</span> – bare prosjekter de er lagt til i</div>
+                <div class="sm:col-span-2"><span class="text-red-300 font-semibold">⛔ Sperret</span> – ingen tilgang, heller ikke til inviterte prosjekter</div>
+            </div>
+
+            <form onsubmit="app.adminAddUser(event)" class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <input type="email" id="admin-new-email" required placeholder="E-post" class="sm:col-span-4 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2.5 text-sm text-white outline-none">
+                <input type="text" id="admin-new-name" maxlength="100" placeholder="Navn" class="sm:col-span-3 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2.5 text-sm text-white outline-none">
+                <select id="admin-new-access" class="sm:col-span-3 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-2.5 py-2.5 text-sm text-white outline-none">
+                    <option value="projects">🔗 Kun inviterte</option>
+                    <option value="own">📁 Egne prosjekter</option>
+                    <option value="full">🌐 Hele appen</option>
+                </select>
+                <button type="submit" class="sm:col-span-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-2.5 rounded-lg text-sm transition">Legg til</button>
+            </form>
+
+            <input type="search" id="admin-search" oninput="app.renderAdminUsers()" placeholder="Søk etter navn eller e-post…" class="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none">
+
+            <div id="admin-users-list" class="space-y-2.5"></div>
+        </div>
+    </div>
+
     <!-- ========================================== -->
     <!-- MODAL 6: PUSH-VARSLER & PÅMINNELSER        -->
     <!-- ========================================== -->
@@ -1028,15 +1115,13 @@
                         <button type="button" onclick="app.loginWithGoogle()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition">
                             <span>🔐 Logg inn med Google</span>
                         </button>
-                        <button type="button" onclick="app.closeFirebaseModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 py-2 px-3 rounded-lg text-xs font-medium transition">
-                            Fortsett i Lokal/Offline-modus
-                        </button>
+
                     </div>
                 </div>
             </div>
 
             <!-- One-Click Firestore Security Rules Copy Box -->
-            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2.5">
+            <div class="js-admin-only bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2.5">
                 <div class="flex items-center justify-between">
                     <div>
                         <h4 class="text-xs font-bold text-white">Sikkerhetsregler for Firestore (Tilgangsstyring per prosjekt)</h4>
@@ -1167,6 +1252,65 @@ service cloud.firestore {
                 } catch (e) {}
             }
         };
+
+        // ==========================================
+        // SECURITY HELPERS
+        // ==========================================
+        // HTML-escape for text inserted with innerHTML
+        function esc(v) {
+            return String(v == null ? '' : v)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        // Project data can be written by invited collaborators, so everything that is
+        // rendered later is neutralised when it enters the app (cloud, import, input):
+        //  - ids may only contain letters, digits, _ and - (they end up in onclick="...")
+        //  - image fields must be a media reference or a data:image URL
+        //  - characters that could open HTML/attributes are replaced by look-alikes
+        const SAFE_ID = /[^A-Za-z0-9_-]/g;
+        const DATA_IMAGE = /^data:image\/[a-z0-9.+-]+(;[a-z0-9=.+-]+)*,[^"'<>\s]*$/i;
+        function safeImageRef(v) {
+            if (typeof v !== 'string') return null;
+            if (/^media:[A-Za-z0-9_-]+$/.test(v)) return v;
+            if (DATA_IMAGE.test(v)) return v;
+            return null;
+        }
+        function safeText(v) {
+            return v.replace(/</g, '‹').replace(/>/g, '›').replace(/"/g, '″').replace(/`/g, 'ˋ');
+        }
+        function sanitizeValue(v, key) {
+            if (typeof v === 'string') {
+                if (key === 'id') return v.replace(SAFE_ID, '');
+                if (key === 'dataUrl' || key === 'photoUrl') return safeImageRef(v);
+                return safeText(v);
+            }
+            if (Array.isArray(v)) return v.map(x => sanitizeValue(x, key === 'items' || key === 'tiles' ? null : null));
+            if (v && typeof v === 'object') {
+                const out = {};
+                Object.keys(v).forEach(k => {
+                    // e-mail keys in permissions must stay as they are (rules compare them)
+                    const nk = key === 'permissions' ? k : k;
+                    out[nk] = key === 'permissions' ? sanitizePermission(v[k]) : sanitizeValue(v[k], k);
+                });
+                return out;
+            }
+            return v;
+        }
+        function sanitizePermission(v) {
+            if (!v || typeof v !== 'object') return { role: 'read' };
+            return {
+                name: typeof v.name === 'string' ? safeText(v.name) : '',
+                role: v.role === 'write' ? 'write' : 'read',
+                canDownload: v.canDownload !== false
+            };
+        }
+        function sanitizeProject(proj, docId) {
+            const clean = sanitizeValue(proj, null);
+            if (docId) clean.id = String(docId).replace(SAFE_ID, '');
+            if (Array.isArray(clean.memberEmails)) clean.memberEmails = clean.memberEmails.filter(e => typeof e === 'string').map(e => e.trim().toLowerCase());
+            if (typeof clean.ownerEmail === 'string') clean.ownerEmail = clean.ownerEmail.trim().toLowerCase();
+            return clean;
+        }
 
         // ==========================================
         // MEDIA STORE: images live outside the project documents.
@@ -1473,18 +1617,17 @@ service cloud.firestore {
                 // Ensure all modals are closed on startup (even if index.html was exported while a modal was open)
                 this.closeAllModals();
 
+                // Login required: show the gate until Firebase knows who is signed in
+                this.setGateState('loading');
                 const saved = safeStorage.getItem('verksted_projects_v2');
+                this.projects = [];
                 if (saved) {
-                    try {
-                        this.projects = JSON.parse(saved);
-                    } catch (e) {
-                        this.projects = JSON.parse(JSON.stringify(SAMPLE_PROJECTS));
-                    }
-                } else {
-                    this.projects = JSON.parse(JSON.stringify(SAMPLE_PROJECTS));
-                    this.projects.forEach(p => { p.isSample = true; p.modifiedAt = 0; });
-                    safeStorage.setItem('verksted_projects_v2', JSON.stringify(this.projects));
+                    try { this.projects = JSON.parse(saved); } catch (e) { this.projects = []; }
                 }
+                // Demo projects are no longer used; stored data is neutralised before use
+                this.projects = (Array.isArray(this.projects) ? this.projects : [])
+                    .filter(p => p && !p.isSample)
+                    .map(p => sanitizeProject(p));
                 this.projects.forEach(p => this.syncProjectPermissionsStruct(p));
                 this.projects.forEach(p => this.rememberSignature(p));
 
@@ -1545,8 +1688,9 @@ service cloud.firestore {
             // ---- Images ----
             mediaSrc(v) {
                 if (!v) return '';
-                if (!isMediaRef(v)) return v;
-                return mediaStore.cache.get(mediaIdOf(v)) || MEDIA_PLACEHOLDER;
+                if (!isMediaRef(v)) return safeImageRef(v) || '';
+                const data = mediaStore.cache.get(mediaIdOf(v));
+                return (data && safeImageRef(data)) || MEDIA_PLACEHOLDER;
             },
             async storeMedia(projectId, dataUrl) {
                 const id = 'm-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
@@ -1624,14 +1768,26 @@ service cloud.firestore {
             },
 
             canEdit() {
-                return this.simulatedRole === 'owner' || this.simulatedRole === 'nodownload';
+                const r = this.projectRole(this.getCurrentProject());
+                return r === 'owner' || r === 'editor';
             },
 
             canDownload() {
-                return this.simulatedRole !== 'nodownload';
+                const p = this.getCurrentProject();
+                const r = this.projectRole(p);
+                if (r === 'owner') return true;
+                if (r === 'none') return false;
+                const perm = (p.permissions || {})[this.myEmail()];
+                return !perm || perm.canDownload !== false;
             },
 
             saveToStorage(showNotification = true) {
+                // Neutralise in place (keeps object references held by callers)
+                this.projects.forEach(p => {
+                    const clean = sanitizeProject(p);
+                    Object.keys(p).forEach(k => { if (!(k in clean)) delete p[k]; });
+                    Object.assign(p, clean);
+                });
                 this.projects.forEach(p => this.syncProjectPermissionsStruct(p));
                 // Find every project that changed since last save/sync and stamp it with a precise timestamp
                 const changed = [];
@@ -1824,8 +1980,8 @@ service cloud.firestore {
                 if (filtered.length === 0) {
                     grid.innerHTML = `
                         <div class="col-span-full bg-slate-900/60 border border-dashed border-slate-800 rounded-2xl p-12 text-center space-y-3">
-                            <p class="text-slate-400 text-sm">Ingen prosjekter funnet i denne kategorien.</p>
-                            <button onclick="app.openNewProjectModal()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-semibold text-xs">+ Opprett nytt prosjekt</button>
+                            <p class="text-slate-400 text-sm">${this.canCreateProject() ? 'Ingen prosjekter funnet i denne kategorien.' : 'Du har ikke tilgang til noen prosjekter ennå. Be eieren invitere deg.'}</p>
+                            <button onclick="app.openNewProjectModal()" class="js-create-only px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-semibold text-xs">+ Opprett nytt prosjekt</button>
                         </div>
                     `;
                     return;
@@ -1894,7 +2050,275 @@ service cloud.firestore {
             },
 
             // ==========================================
-            // ROLE SIMULATOR & PERMISSIONS
+            // ACCESS CONTROL (mirrors firestore.rules – the rules are what actually protect the data)
+            // ==========================================
+            APP_OWNERS: ['tor-arild@karlsen.no', 'takarlsen@gmail.com'],
+            access: null,          // 'admin' | 'full' | 'own' | 'projects' | 'blocked'
+            isAdmin: false,
+            adminUsers: {},        // users/{email} docs (admins only)
+
+            myEmail() {
+                return ((this.firebaseUser && this.firebaseUser.email) || '').trim().toLowerCase();
+            },
+            hasFullAccess() {
+                return this.access === 'admin' || this.access === 'full';
+            },
+            canCreateProject() {
+                return ['admin', 'full', 'own'].includes(this.access);
+            },
+            // 'owner' | 'editor' | 'viewer' | 'none'
+            projectRole(p) {
+                if (!p || !this.firebaseUser || !this.access || this.access === 'blocked') return 'none';
+                if (this.hasFullAccess()) return 'owner';
+                const me = this.myEmail();
+                if ((p.ownerEmail || '').toLowerCase() === me) return 'owner';
+                const perm = (p.permissions || {})[me];
+                if (!perm) return 'none';
+                return perm.role === 'write' ? 'editor' : 'viewer';
+            },
+            canManageProject(p = this.getCurrentProject()) {
+                return this.projectRole(p) === 'owner';
+            },
+            applyAccessUI() {
+                const b = document.body.classList;
+                b.toggle('no-create', !this.canCreateProject());
+                b.toggle('is-admin', this.isAdmin);
+                b.toggle('no-manage', !this.canManageProject());
+                b.toggle('no-edit', !this.canEdit());
+            },
+
+            // ---- Login gate ----
+            setGateState(state, email = '') {
+                const gate = document.getElementById('auth-gate');
+                ['gate-loading', 'gate-login', 'gate-unverified', 'gate-blocked'].forEach(id =>
+                    document.getElementById(id).classList.toggle('hidden', id !== 'gate-' + state));
+                gate.classList.toggle('hidden', state === 'open');
+                if (state === 'unverified') document.getElementById('gate-unverified-email').textContent = email;
+                if (state === 'blocked') document.getElementById('gate-blocked-email').textContent = email;
+            },
+            async gateLogin(e, mode) {
+                if (e) e.preventDefault();
+                const email = document.getElementById('gate-email').value.trim();
+                const pass = document.getElementById('gate-pass').value;
+                if (!email || !pass) { this.showToast('Fyll inn e-post og passord', 'amber'); return; }
+                if (mode === 'register' && pass.length < 8) { this.showToast('Passordet må ha minst 8 tegn', 'amber'); return; }
+                if (!window.fbBridge) { this.showToast('Laster fortsatt…', 'amber'); return; }
+                await window.fbBridge.emailAuth(email, pass, mode);
+            },
+            async gateResetPassword() {
+                const email = document.getElementById('gate-email').value.trim();
+                if (!email) { this.showToast('Skriv inn e-postadressen først', 'amber'); return; }
+                if (window.fbBridge) await window.fbBridge.resetPassword(email);
+            },
+            async gateResendVerification() {
+                if (window.fbBridge) await window.fbBridge.sendVerification();
+            },
+            async gateRefreshVerification() {
+                if (window.fbBridge) await window.fbBridge.refreshVerification();
+            },
+
+            // Called by the Firebase module when the access level is known/changes
+            setAccess(level) {
+                this.access = level;
+                this.isAdmin = level === 'admin';
+                if (level === 'blocked') {
+                    this.setGateState('blocked', this.myEmail());
+                } else {
+                    this.setGateState('open');
+                }
+                this.applyAccessUI();
+                this.renderDashboard();
+                if (this.currentProjectId) this.renderProjectDetail();
+            },
+
+            // Removes all project data from this device (used on logout)
+            async clearLocalData() {
+                this.projects = [];
+                this._sigs = {};
+                ['verksted_projects_v2', 'verksted_synced_ids', 'verksted_uploaded_media'].forEach(k => {
+                    try { window.localStorage.removeItem(k); } catch (e) {}
+                });
+                for (const id of [...mediaStore.cache.keys()]) await mediaStore.remove(id);
+            },
+
+            // ==========================================
+            // USER ADMINISTRATION (app owners only)
+            // ==========================================
+            openAdminModal() {
+                if (!this.isAdmin) return;
+                this._adminOpen = this._adminOpen || new Set();
+                this.renderAdminUsers();
+                document.getElementById('modal-admin').classList.remove('hidden');
+            },
+            closeAdminModal() {
+                document.getElementById('modal-admin').classList.add('hidden');
+            },
+            // Everyone known to the app: owners, users/{email} docs, project owners and invited people
+            collectKnownUsers() {
+                const map = new Map();
+                const add = (email, name) => {
+                    email = String(email || '').trim().toLowerCase();
+                    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return null;
+                    if (!map.has(email)) map.set(email, { email, name: '', projects: [] });
+                    const u = map.get(email);
+                    if (name && !u.name) u.name = name;
+                    return u;
+                };
+                this.APP_OWNERS.forEach(e => add(e));
+                Object.entries(this.adminUsers).forEach(([e, d]) => add(e, d.name));
+                this.projects.forEach(p => {
+                    if (p.isSample) return;
+                    if (p.ownerEmail) add(p.ownerEmail);
+                    (p.collaborators || []).forEach(c => add(c.email, c.name));
+                });
+                map.forEach(u => {
+                    if (this.APP_OWNERS.includes(u.email)) u.access = 'admin';
+                    else u.access = (this.adminUsers[u.email] && this.adminUsers[u.email].access) || 'projects';
+                });
+                return [...map.values()];
+            },
+            userProjectRole(email, p) {
+                if ((p.ownerEmail || '').toLowerCase() === email) return 'owner';
+                const c = (p.collaborators || []).find(x => (x.email || '').toLowerCase() === email);
+                if (!c) return 'none';
+                return c.role === 'write' ? 'write' : 'read';
+            },
+            renderAdminUsers() {
+                const box = document.getElementById('admin-users-list');
+                if (!box) return;
+                const q = (document.getElementById('admin-search').value || '').trim().toLowerCase();
+                const order = { admin: 0, full: 1, own: 2, projects: 3, blocked: 4 };
+                const users = this.collectKnownUsers()
+                    .filter(u => !q || u.email.includes(q) || (u.name || '').toLowerCase().includes(q))
+                    .sort((a, b) => (order[a.access] - order[b.access]) || (a.name || a.email).localeCompare(b.name || b.email, 'no'));
+                const projects = this.projects.filter(p => !p.isSample).sort((a, b) => (a.title || '').localeCompare(b.title || '', 'no'));
+                const badge = {
+                    admin: ['👑 App-eier', 'bg-amber-500/20 text-amber-300 border-amber-500/40'],
+                    full: ['🌐 Hele appen', 'bg-emerald-950/70 text-emerald-300 border-emerald-700/60'],
+                    own: ['📁 Egne prosjekter', 'bg-sky-950/70 text-sky-300 border-sky-700/60'],
+                    projects: ['🔗 Kun inviterte', 'bg-slate-800 text-slate-200 border-slate-700'],
+                    blocked: ['⛔ Sperret', 'bg-red-950/70 text-red-300 border-red-700/60']
+                };
+                if (users.length === 0) {
+                    box.innerHTML = '<div class="p-6 text-center text-xs text-slate-500">Ingen brukere funnet.</div>';
+                    return;
+                }
+                box.innerHTML = users.map((u, idx) => {
+                    const key = 'u' + idx;
+                    const isOwner = u.access === 'admin';
+                    const memberships = projects.map(p => ({ p, role: this.userProjectRole(u.email, p) })).filter(x => x.role !== 'none');
+                    const open = this._adminOpen && this._adminOpen.has(u.email);
+                    const [label, cls] = badge[u.access] || badge.projects;
+                    const projectRows = projects.map(p => {
+                        const role = this.userProjectRole(u.email, p);
+                        const c = (p.collaborators || []).find(x => (x.email || '').toLowerCase() === u.email);
+                        const all = isOwner || u.access === 'full';
+                        return `
+                            <div class="flex flex-wrap items-center justify-between gap-2 py-2 border-t border-slate-800/80">
+                                <div class="min-w-0 text-xs text-slate-200 truncate">${esc(p.title)}</div>
+                                <div class="flex items-center gap-2">
+                                    ${role === 'owner' ? '<span class="text-[11px] text-amber-300">Eier av prosjektet</span>' : all ? '<span class="text-[11px] text-emerald-300">Tilgang via hele appen</span>' : `
+                                    <select data-email="${esc(u.email)}" data-project="${esc(p.id)}" onchange="app.adminSetProjectRole(this.dataset.email, this.dataset.project, this.value)" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white outline-none">
+                                        <option value="none" ${role === 'none' ? 'selected' : ''}>Ingen tilgang</option>
+                                        <option value="read" ${role === 'read' ? 'selected' : ''}>👁️ Lese</option>
+                                        <option value="write" ${role === 'write' ? 'selected' : ''}>✏️ Skrive</option>
+                                    </select>
+                                    ${c ? `<label class="flex items-center gap-1 text-[11px] text-slate-400"><input type="checkbox" ${c.allowDownload !== false ? 'checked' : ''} data-email="${esc(u.email)}" data-project="${esc(p.id)}" onchange="app.adminSetProjectDownload(this.dataset.email, this.dataset.project, this.checked)" class="accent-amber-500"> Nedlasting</label>` : ''}`}
+                                </div>
+                            </div>`;
+                    }).join('');
+                    return `
+                        <div class="rounded-xl border ${u.access === 'blocked' ? 'border-red-900/60' : 'border-slate-800'} bg-slate-950 overflow-hidden">
+                            <div class="p-3 flex flex-col sm:flex-row sm:items-center gap-2.5">
+                                <button type="button" data-email="${esc(u.email)}" onclick="app.adminToggleUser(this.dataset.email)" class="flex-1 min-w-0 text-left">
+                                    <div class="text-sm font-semibold text-white truncate">${esc(u.name || u.email.split('@')[0])}</div>
+                                    <div class="text-[11px] font-mono text-slate-400 truncate">${esc(u.email)}</div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5">${isOwner || u.access === 'full' ? 'Alle prosjekter' : `${memberships.length} prosjekt${memberships.length === 1 ? '' : 'er'}`} · ${open ? 'skjul ▲' : 'vis prosjekter ▼'}</div>
+                                </button>
+                                ${isOwner ? `<span class="self-start sm:self-auto px-2 py-1 rounded-lg text-[11px] border ${cls}">${label}</span>` : `
+                                <div class="flex items-center gap-2">
+                                    <select data-email="${esc(u.email)}" onchange="app.adminSetAccess(this.dataset.email, this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white outline-none">
+                                        <option value="projects" ${u.access === 'projects' ? 'selected' : ''}>🔗 Kun inviterte</option>
+                                        <option value="own" ${u.access === 'own' ? 'selected' : ''}>📁 Egne prosjekter</option>
+                                        <option value="full" ${u.access === 'full' ? 'selected' : ''}>🌐 Hele appen</option>
+                                        <option value="blocked" ${u.access === 'blocked' ? 'selected' : ''}>⛔ Sperret</option>
+                                    </select>
+                                    <button type="button" data-email="${esc(u.email)}" onclick="app.adminRemoveUser(this.dataset.email)" title="Fjern brukeren fra alle prosjekter" class="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-950/40 text-xs">🗑</button>
+                                </div>`}
+                            </div>
+                            ${open ? `<div class="px-3 pb-2 bg-slate-900/50">${projects.length ? projectRows : '<div class="py-3 text-xs text-slate-500">Ingen prosjekter ennå.</div>'}</div>` : ''}
+                        </div>`;
+                }).join('');
+            },
+            adminToggleUser(email) {
+                this._adminOpen = this._adminOpen || new Set();
+                if (this._adminOpen.has(email)) this._adminOpen.delete(email); else this._adminOpen.add(email);
+                this.renderAdminUsers();
+            },
+            async adminAddUser(e) {
+                e.preventDefault();
+                if (!this.isAdmin) return;
+                const email = document.getElementById('admin-new-email').value.trim().toLowerCase();
+                const name = document.getElementById('admin-new-name').value.trim().slice(0, 100);
+                const access = document.getElementById('admin-new-access').value;
+                if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { this.showToast('Ugyldig e-postadresse', 'amber'); return; }
+                if (this.APP_OWNERS.includes(email)) { this.showToast('Dette er en app-eier', 'amber'); return; }
+                await window.fbBridge.setUserAccess(email, access, name);
+                document.getElementById('admin-new-email').value = '';
+                document.getElementById('admin-new-name').value = '';
+                this._adminOpen.add(email);
+                this.showToast(`${name || email} er lagt til. Velg prosjekter under.`, 'emerald');
+            },
+            async adminSetAccess(email, access) {
+                if (!this.isAdmin || this.APP_OWNERS.includes(email)) return;
+                const u = this.collectKnownUsers().find(x => x.email === email);
+                await window.fbBridge.setUserAccess(email, access, (u && u.name) || '');
+                const names = { full: 'hele appen', own: 'egne prosjekter', projects: 'kun inviterte prosjekter', blocked: 'sperret' };
+                this.showToast(`${email}: ${names[access]}`, access === 'blocked' ? 'amber' : 'emerald');
+            },
+            adminSetProjectRole(email, projectId, role) {
+                if (!this.isAdmin) return;
+                const p = this.projects.find(x => x.id === projectId);
+                if (!p) return;
+                p.collaborators = p.collaborators || [];
+                const existing = p.collaborators.find(c => (c.email || '').toLowerCase() === email);
+                if (role === 'none') {
+                    p.collaborators = p.collaborators.filter(c => (c.email || '').toLowerCase() !== email);
+                } else if (existing) {
+                    existing.role = role;
+                } else {
+                    const u = this.collectKnownUsers().find(x => x.email === email);
+                    p.collaborators.push({ id: 'col-' + Date.now(), name: (u && u.name) || email.split('@')[0], email, role, allowDownload: true });
+                }
+                this.syncProjectPermissionsStruct(p);
+                this.saveToStorage(false);
+                this.renderAdminUsers();
+                this.showToast(role === 'none' ? `Stengte «${p.title}» for ${email}` : `Åpnet «${p.title}» for ${email}`, 'emerald');
+            },
+            adminSetProjectDownload(email, projectId, allow) {
+                if (!this.isAdmin) return;
+                const p = this.projects.find(x => x.id === projectId);
+                const c = p && (p.collaborators || []).find(x => (x.email || '').toLowerCase() === email);
+                if (!c) return;
+                c.allowDownload = !!allow;
+                this.syncProjectPermissionsStruct(p);
+                this.saveToStorage(false);
+            },
+            async adminRemoveUser(email) {
+                if (!this.isAdmin || this.APP_OWNERS.includes(email)) return;
+                if (!confirm(`Fjerne ${email} fra alle prosjekter og slette brukeroppføringen?\n\nBrukeren mister all tilgang. Kontoen i Firebase Authentication blir liggende, men har ingen tilgang.`)) return;
+                this.projects.forEach(p => {
+                    const before = (p.collaborators || []).length;
+                    p.collaborators = (p.collaborators || []).filter(c => (c.email || '').toLowerCase() !== email);
+                    if (p.collaborators.length !== before) this.syncProjectPermissionsStruct(p);
+                });
+                this.saveToStorage(false);
+                await window.fbBridge.deleteUserDoc(email);
+                this.showToast(`${email} er fjernet`, 'amber');
+            },
+
+            // ==========================================
+            // ROLE DISPLAY & PERMISSIONS
             // ==========================================
             setSimulatedRole(role) {
                 this.simulatedRole = role;
@@ -1909,40 +2333,31 @@ service cloud.firestore {
             },
 
             updateRoleSimulatorUI() {
-                const roles = [
-                    { id: 'owner', btnId: 'role-btn-owner' },
-                    { id: 'viewer', btnId: 'role-btn-viewer' },
-                    { id: 'nodownload', btnId: 'role-btn-nodownload' }
-                ];
-                roles.forEach(r => {
-                    const btn = document.getElementById(r.btnId);
-                    if (!btn) return;
-                    if (this.simulatedRole === r.id) {
-                        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow';
-                    } else {
-                        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition text-slate-300 hover:bg-slate-800';
-                    }
-                });
-
+                const p = this.getCurrentProject();
+                const role = this.projectRole(p);
                 const pill = document.getElementById('active-role-pill');
                 const banner = document.getElementById('role-restriction-banner');
                 const bannerText = document.getElementById('role-restriction-text');
-
-                if (this.simulatedRole === 'owner') {
-                    pill.textContent = 'Eier: Full tilgang';
-                    pill.className = 'px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-700/60';
+                const pills = {
+                    owner: ['👑 Eier – full tilgang', 'bg-emerald-950 text-emerald-300 border-emerald-700/60'],
+                    editor: ['✏️ Skrivetilgang', 'bg-amber-950 text-amber-300 border-amber-700/60'],
+                    viewer: ['👁️ Kun lesetilgang', 'bg-slate-800 text-slate-200 border-slate-600'],
+                    none: ['Ingen tilgang', 'bg-red-950 text-red-300 border-red-700/60']
+                };
+                const [label, cls] = pills[role] || pills.none;
+                pill.textContent = label;
+                pill.className = `px-2 py-0.5 rounded text-[10px] font-mono border ${cls}`;
+                if (role === 'viewer' || (role === 'editor' && !this.canDownload())) {
+                    banner.className = 'rounded-xl p-3 border flex items-center justify-between gap-3 text-xs bg-slate-900 border-slate-700 text-slate-300';
+                    bannerText.textContent = role === 'viewer'
+                        ? 'Du har lesetilgang til dette prosjektet. Kontakt eieren om du trenger å redigere.'
+                        : 'Du kan redigere, men nedlasting av bilder og tegninger er slått av for deg.';
+                } else {
                     banner.classList.add('hidden');
-                } else if (this.simulatedRole === 'viewer') {
-                    pill.textContent = 'Kun lesetilgang (Viewer)';
-                    pill.className = 'px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950 text-amber-300 border border-amber-700/60';
-                    banner.className = 'rounded-xl p-3 border flex items-center justify-between gap-3 text-xs bg-amber-950/50 border-amber-700/60 text-amber-200';
-                    bannerText.textContent = 'Forhåndsviser som Deltaker (Kun lesetilgang): Redigering, avhuking, sletting og opplasting er låst på dette prosjektet.';
-                } else if (this.simulatedRole === 'nodownload') {
-                    pill.textContent = 'Uten nedlasting';
-                    pill.className = 'px-2 py-0.5 rounded text-[10px] font-mono bg-red-950 text-red-300 border border-red-700/60';
-                    banner.className = 'rounded-xl p-3 border flex items-center justify-between gap-3 text-xs bg-red-950/50 border-red-700/60 text-red-200';
-                    bannerText.textContent = 'Forhåndsviser som Deltaker uten nedlasting: Nedlastingsknapper og høyreklikk-lagring på plantegninger og bilder er sperret.';
                 }
+                const statusSel = document.getElementById('detail-status-select');
+                if (statusSel) statusSel.disabled = !(role === 'owner' || role === 'editor');
+                this.applyAccessUI();
 
                 // Toggle visibility of edit controls based on canEdit()
                 const editable = this.canEdit();
@@ -2433,7 +2848,7 @@ service cloud.firestore {
             // ==========================================
             openShareModal() {
                 const p = this.getCurrentProject();
-                if (!p) return;
+                if (!p || !this.canManageProject(p)) return;
                 document.getElementById('share-modal-project-name').textContent = `Prosjekt: ${p.title}`;
                 document.getElementById('share-project-id-code').textContent = `/projects/${p.id}`;
                 this.renderCollaboratorsList();
@@ -2459,8 +2874,8 @@ service cloud.firestore {
                     <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                             <div class="font-semibold text-xs text-white flex items-center gap-2">
-                                <span>👤 ${c.name}</span>
-                                <span class="text-[11px] font-mono text-slate-400">${c.email}</span>
+                                <span>👤 ${esc(c.name)}</span>
+                                <span class="text-[11px] font-mono text-slate-400">${esc(c.email)}</span>
                             </div>
                             <div class="text-[11px] text-slate-400 mt-0.5">Kun tilgang til prosjekt <span class="font-mono text-slate-300">${p.id}</span></div>
                         </div>
@@ -2490,13 +2905,21 @@ service cloud.firestore {
 
             inviteCollaborator(e) {
                 e.preventDefault();
-                const name = document.getElementById('collab-name').value.trim();
+                const name = document.getElementById('collab-name').value.trim().slice(0, 100);
                 const email = document.getElementById('collab-email').value.trim().toLowerCase();
-                const role = document.getElementById('collab-role').value;
+                const role = document.getElementById('collab-role').value === 'write' ? 'write' : 'read';
                 const allowDownload = document.getElementById('collab-allow-download').checked;
 
                 const p = this.getCurrentProject();
+                if (!this.canManageProject(p)) return;
+                if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { this.showToast('Ugyldig e-postadresse', 'amber'); return; }
+                if (email === (p.ownerEmail || '').toLowerCase()) { this.showToast('Dette er eieren av prosjektet', 'amber'); return; }
                 p.collaborators = p.collaborators || [];
+                if (p.collaborators.some(c => (c.email || '').toLowerCase() === email)) { this.showToast('Personen er allerede invitert', 'amber'); return; }
+                // App owners: the invited person is registered as a user (project access only)
+                if (this.isAdmin && window.fbBridge && !this.APP_OWNERS.includes(email) && !this.adminUsers[email]) {
+                    window.fbBridge.setUserAccess(email, 'projects', name);
+                }
                 p.collaborators.push({
                     id: 'col-' + Date.now(),
                     name,
@@ -2516,6 +2939,7 @@ service cloud.firestore {
 
             toggleCollaboratorRole(collabId) {
                 const p = this.getCurrentProject();
+                if (!this.canManageProject(p)) return;
                 const c = p.collaborators.find(x => x.id === collabId);
                 if (c) {
                     c.role = (c.role === 'write' || c.role === 'editor') ? 'read' : 'write';
@@ -2527,6 +2951,7 @@ service cloud.firestore {
 
             toggleCollaboratorDownload(collabId) {
                 const p = this.getCurrentProject();
+                if (!this.canManageProject(p)) return;
                 const c = p.collaborators.find(x => x.id === collabId);
                 if (c) {
                     c.allowDownload = !c.allowDownload;
@@ -2538,6 +2963,7 @@ service cloud.firestore {
 
             removeCollaborator(collabId) {
                 const p = this.getCurrentProject();
+                if (!this.canManageProject(p)) return;
                 p.collaborators = p.collaborators.filter(x => x.id !== collabId);
                 this.syncProjectPermissionsStruct(p);
                 this.saveToStorage();
@@ -3683,6 +4109,7 @@ Avbryt = legg linjene til nederst`)) {
             // MODALS & UTILITIES
             // ==========================================
             openNewProjectModal() {
+                if (!this.canCreateProject()) return;
                 document.getElementById('modal-new-project').classList.remove('hidden');
                 document.getElementById('np-title').focus();
             },
@@ -3693,6 +4120,10 @@ Avbryt = legg linjene til nederst`)) {
 
             createProject(e) {
                 e.preventDefault();
+                if (!this.canCreateProject()) {
+                    this.showToast('Du har ikke tilgang til å opprette prosjekter', 'amber');
+                    return;
+                }
                 const title = document.getElementById('np-title').value.trim();
                 const category = document.getElementById('np-category').value;
                 const status = document.getElementById('np-status').value;
@@ -3700,6 +4131,7 @@ Avbryt = legg linjene til nederst`)) {
 
                 const newProj = {
                     id: 'proj-' + Date.now(),
+                    ownerEmail: this.myEmail(),
                     title,
                     category,
                     status,
@@ -3736,7 +4168,7 @@ Avbryt = legg linjene til nederst`)) {
             },
 
             deleteCurrentProject() {
-                if (!this.canEdit()) return;
+                if (!this.canManageProject()) return;
                 const p = this.getCurrentProject();
                 if (!p) return;
                 const delId = p.id;
@@ -3954,7 +4386,10 @@ Avbryt = legg linjene til nederst`)) {
             query,
             where,
             enableNetwork,
-            disableNetwork
+            disableNetwork,
+            terminate,
+            clearIndexedDbPersistence,
+            connectFirestoreEmulator
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import {
             getAuth,
@@ -3964,7 +4399,10 @@ Avbryt = legg linjene til nederst`)) {
             sendPasswordResetEmail,
             GoogleAuthProvider,
             signInWithPopup,
-            signOut
+            signOut,
+            sendEmailVerification,
+            reload,
+            connectAuthEmulator
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         // Firebase web config (public identifiers – access is protected by Firestore Security Rules)
@@ -4009,7 +4447,7 @@ Avbryt = legg linjene til nederst`)) {
                     if (mediaStore.cache.has(id) || fetchingMedia.has(id)) continue;
                     fetchingMedia.add(id);
                     getDoc(doc(db, 'projects', p.id, 'media', id)).then(async (snap) => {
-                        if (snap.exists() && snap.data().data) {
+                        if (snap.exists() && safeImageRef(snap.data().data)) {
                             await mediaStore.put(id, p.id, snap.data().data);
                             markMediaUploaded(id);
                             scheduleRerender();
@@ -4102,6 +4540,12 @@ Avbryt = legg linjene til nederst`)) {
                 db = getFirestore(fbApp);
             }
             auth = getAuth(fbApp);
+            const USE_EMULATOR = ['localhost', '127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emulator');
+            if (USE_EMULATOR) {
+                connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+                connectFirestoreEmulator(db, '127.0.0.1', 8080);
+                console.warn('Bruker lokale Firebase-emulatorer');
+            }
             window.app.firebaseReady = true;
             updateFirebaseModalUI('Ikke innlogget – data lagres kun på denne enheten', 'amber');
         } catch (err) {
@@ -4115,21 +4559,24 @@ Avbryt = legg linjene til nederst`)) {
         //  - Projects that were synced before but are gone from the cloud
         //    were deleted on another device and are removed locally.
         // ------------------------------------------------------------------
-        function subscribeToFirestoreProjects(user) {
+        function subscribeToFirestoreProjects(user, all) {
             unsubscribers.forEach(u => u());
             unsubscribers = [];
             const email = (user.email || '').trim().toLowerCase();
             const projectsRef = collection(db, 'projects');
             // Firestore rules are not filters: each query must match what the rules allow
-            const sources = {
-                owned: { q: query(projectsRef, where('ownerEmail', '==', email)), docs: new Map(), fromServer: false },
-                shared: { q: query(projectsRef, where('memberEmails', 'array-contains', email)), docs: new Map(), fromServer: false }
-            };
+            const sources = all
+                ? { all: { q: query(projectsRef), docs: new Map(), fromServer: false } }
+                : {
+                    owned: { q: query(projectsRef, where('ownerEmail', '==', email)), docs: new Map(), fromServer: false },
+                    shared: { q: query(projectsRef, where('memberEmails', 'array-contains', email)), docs: new Map(), fromServer: false }
+                };
 
             const merge = () => {
                 const app = window.app;
-                const cloud = new Map([...sources.owned.docs, ...sources.shared.docs]);
-                const complete = sources.owned.fromServer && sources.shared.fromServer;
+                const cloud = new Map();
+                Object.values(sources).forEach(src => src.docs.forEach((v, k) => cloud.set(k, v)));
+                const complete = Object.values(sources).every(src => src.fromServer);
                 const synced = loadSyncedIds();
                 const localById = new Map(app.projects.map(p => [p.id, p]));
                 let changedLocally = false;
@@ -4158,12 +4605,16 @@ Avbryt = legg linjene til nederst`)) {
                             // Hide demo projects once the account has real data
                             if (cloud.size > 0) { localById.delete(lp.id); changedLocally = true; }
                         } else if (synced.has(lp.id)) {
-                            // Deleted on another device
+                            // Deleted on another device, or access was removed
                             localById.delete(lp.id);
                             synced.delete(lp.id);
                             changedLocally = true;
-                        } else {
+                        } else if (app.canCreateProject() && (!lp.ownerEmail || lp.ownerEmail === email)) {
                             toUpload.push(lp);
+                        } else {
+                            // Old local data this account is not allowed to publish
+                            localById.delete(lp.id);
+                            changedLocally = true;
                         }
                     });
                 }
@@ -4201,7 +4652,7 @@ Avbryt = legg linjene til nederst`)) {
             Object.entries(sources).forEach(([key, src]) => {
                 const unsub = onSnapshot(src.q, { includeMetadataChanges: true }, (snapshot) => {
                     src.docs = new Map();
-                    snapshot.forEach(d => src.docs.set(d.id, d.data()));
+                    snapshot.forEach(d => src.docs.set(d.id, sanitizeProject(d.data(), d.id)));
                     if (!snapshot.metadata.fromCache) src.fromServer = true;
                     if (!snapshot.metadata.hasPendingWrites) merge();
                 }, (err) => {
@@ -4215,6 +4666,81 @@ Avbryt = legg linjene til nederst`)) {
             });
         }
 
+
+        let unsubUserDoc = null, unsubUsers = null, currentMode = null;
+        function stopListeners() {
+            if (unsubUserDoc) { unsubUserDoc(); unsubUserDoc = null; }
+            if (unsubUsers) { unsubUsers(); unsubUsers = null; }
+            unsubscribers.forEach(u => u());
+            unsubscribers = [];
+            currentMode = null;
+        }
+
+        function startAccess(user, level) {
+            const app = window.app;
+            app.setAccess(level);
+            if (level === 'blocked') {
+                unsubscribers.forEach(u => u());
+                unsubscribers = [];
+                currentMode = null;
+                app.clearLocalData().then(() => app.renderDashboard());
+                return;
+            }
+            const mode = (level === 'admin' || level === 'full') ? 'all' : 'mine';
+            if (mode !== currentMode) {
+                currentMode = mode;
+                subscribeToFirestoreProjects(user, mode === 'all');
+            }
+            if (level === 'admin' && !unsubUsers) {
+                unsubUsers = onSnapshot(collection(db, 'users'), (snap) => {
+                    const users = {};
+                    snap.forEach(d => {
+                        const v = d.data() || {};
+                        users[d.id] = { access: v.access || 'projects', name: typeof v.name === 'string' ? safeText(v.name) : '' };
+                    });
+                    app.adminUsers = users;
+                    if (!document.getElementById('modal-admin').classList.contains('hidden')) app.renderAdminUsers();
+                }, (err) => console.error('Brukerliste feilet', err));
+            }
+        }
+
+        async function handleUser(user) {
+            await appReady;
+            await window.app.mediaReady;
+            const app = window.app;
+            stopListeners();
+            app.firebaseUser = user || null;
+            app.syncError = null;
+            if (!user) {
+                app.access = null;
+                app.isAdmin = false;
+                app.applyAccessUI();
+                app.setGateState('login');
+                updateFirebaseModalUI('Ikke innlogget', 'amber', null);
+                app.updateSyncBadgeUI();
+                return;
+            }
+            if (!user.emailVerified) {
+                app.setGateState('unverified', user.email);
+                return;
+            }
+            const email = user.email.trim().toLowerCase();
+            updateFirebaseModalUI(`Synkroniserer med skyen (${user.email})`, 'emerald', user.email);
+            if (app.APP_OWNERS.includes(email)) {
+                startAccess(user, 'admin');
+            } else {
+                unsubUserDoc = onSnapshot(doc(db, 'users', email), (snap) => {
+                    const v = snap.exists() ? snap.data() : null;
+                    const level = v && ['full', 'own', 'projects', 'blocked'].includes(v.access) ? v.access : 'projects';
+                    startAccess(user, level);
+                }, (err) => {
+                    console.error('Kunne ikke lese tilgang', err);
+                    startAccess(user, 'projects');
+                });
+            }
+            app.updateSyncBadgeUI();
+        }
+
         // Wait until app.init() has loaded local projects before merging with the cloud
         const appReady = new Promise((resolve) => {
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => resolve());
@@ -4222,23 +4748,9 @@ Avbryt = legg linjene til nederst`)) {
         });
 
         if (auth) {
-            onAuthStateChanged(auth, async (user) => {
-                await appReady;
-                await window.app.mediaReady;
-                window.app.firebaseUser = user || null;
-                window.app.syncError = null;
-                if (user) {
-                    updateFirebaseModalUI(`Synkroniserer med skyen (${user.email})`, 'emerald', user.email);
-                    // Claim local projects for this account
-                    window.app.projects.forEach(p => window.app.syncProjectPermissionsStruct(p));
-                    subscribeToFirestoreProjects(user);
-                } else {
-                    unsubscribers.forEach(u => u());
-                    unsubscribers = [];
-                    updateFirebaseModalUI('Ikke innlogget – data lagres kun på denne enheten', 'amber', null);
-                }
-                window.app.updateSyncBadgeUI();
-            });
+            onAuthStateChanged(auth, (user) => { handleUser(user); });
+        } else {
+            appReady.then(() => window.app.setGateState('login'));
         }
 
         function isIosStandalone() {
@@ -4252,7 +4764,8 @@ Avbryt = legg linjene til nederst`)) {
                 'auth/wrong-password': 'Feil passord',
                 'auth/user-not-found': 'Fant ingen bruker med denne e-posten',
                 'auth/email-already-in-use': 'E-posten er allerede registrert – logg inn i stedet (eller bruk «Glemt passord»)',
-                'auth/weak-password': 'Passordet må ha minst 6 tegn',
+                'auth/weak-password': 'Passordet må ha minst 8 tegn',
+                'auth/too-many-requests': 'For mange forsøk – vent litt og prøv igjen',
                 'auth/invalid-email': 'Ugyldig e-postadresse',
                 'auth/operation-not-allowed': 'Innloggingsmetoden er ikke aktivert i Firebase Console',
                 'auth/unauthorized-domain': 'Domenet er ikke godkjent i Firebase Authentication',
@@ -4267,8 +4780,9 @@ Avbryt = legg linjene til nederst`)) {
                 if (!auth) return;
                 try {
                     if (mode === 'register') {
-                        await createUserWithEmailAndPassword(auth, email, pass);
-                        window.app.showToast('Bruker opprettet og logget inn!', 'emerald');
+                        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                        try { await sendEmailVerification(cred.user); } catch (e) {}
+                        window.app.showToast('Bruker opprettet – bekreft e-posten via lenken vi sendte', 'emerald');
                     } else {
                         await signInWithEmailAndPassword(auth, email, pass);
                         window.app.showToast('Logget inn – synkroniserer…', 'emerald');
@@ -4304,15 +4818,61 @@ Avbryt = legg linjene til nederst`)) {
                 }
             },
 
+            async sendVerification() {
+                if (!auth || !auth.currentUser) return;
+                try {
+                    await sendEmailVerification(auth.currentUser);
+                    window.app.showToast('Ny bekreftelses-e-post er sendt', 'emerald');
+                } catch (err) {
+                    window.app.showToast(`Kunne ikke sende: ${authErrorText(err)}`, 'amber');
+                }
+            },
+
+            async refreshVerification() {
+                if (!auth || !auth.currentUser) return;
+                await reload(auth.currentUser);
+                if (!auth.currentUser.emailVerified) {
+                    window.app.showToast('E-posten er ikke bekreftet ennå', 'amber');
+                    return;
+                }
+                await auth.currentUser.getIdToken(true);   // new token with email_verified = true
+                handleUser(auth.currentUser);
+            },
+
+            // App owners only (enforced by the rules)
+            setUserAccess(email, access, name = '') {
+                if (!db || !auth || !auth.currentUser) return Promise.resolve();
+                email = String(email).trim().toLowerCase();
+                return trackWrite(setDoc(doc(db, 'users', email), {
+                    access,
+                    name: String(name || '').slice(0, 100),
+                    updatedAt: Date.now(),
+                    updatedBy: auth.currentUser.email.toLowerCase()
+                }), 'user ' + email);
+            },
+
+            deleteUserDoc(email) {
+                if (!db || !auth || !auth.currentUser) return Promise.resolve();
+                return trackWrite(deleteDoc(doc(db, 'users', String(email).trim().toLowerCase())), 'delete user ' + email);
+            },
+
+            // Logout removes every copy of the data from this device
             async logout() {
                 if (!auth) return;
+                stopListeners();
                 await signOut(auth);
-                saveSyncedIds(new Set());
-                window.app.showToast('Logget ut (fortsetter lokalt)', 'amber');
+                await window.app.clearLocalData();
+                try { await terminate(db); await clearIndexedDbPersistence(db); } catch (e) {}
+                location.reload();
             },
 
             saveProject(project) {
                 if (!db || !auth || !auth.currentUser) return Promise.resolve();
+                // Only write what this account is allowed to write (the rules would refuse anyway)
+                const role = window.app.projectRole(project);
+                const isNew = !loadSyncedIds().has(project.id);
+                if (!(role === 'owner' || role === 'editor')) return Promise.resolve();
+                if (isNew && !window.app.canCreateProject()) return Promise.resolve();
                 window.app.syncProjectPermissionsStruct(project);
                 if (!project.ownerEmail) project.ownerEmail = auth.currentUser.email.toLowerCase();
                 if (!project.modifiedAt) project.modifiedAt = Date.now();
@@ -4350,6 +4910,8 @@ Avbryt = legg linjene til nederst`)) {
 
             deleteMedia(projectId, mediaId) {
                 if (!db || !auth || !auth.currentUser) return Promise.resolve();
+                const proj = window.app.projects.find(x => x.id === projectId);
+                if (proj && !['owner', 'editor'].includes(window.app.projectRole(proj))) return Promise.resolve();
                 markMediaUploaded(mediaId, false);
                 return trackWrite(deleteDoc(doc(db, 'projects', projectId, 'media', mediaId)), 'delete media ' + mediaId);
             },
