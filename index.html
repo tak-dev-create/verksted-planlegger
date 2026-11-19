@@ -2986,6 +2986,16 @@ service cloud.firestore {
             },
 
             // Import Excel (.xlsx / .csv) following columns A: Pos, B: Del, C: Antall, D: Lengde, E: Bredde, F: Tykkelse, G: Areal/stk, H: Areal tot, I: Gruppe, J: Merknad, K: Kostnad/linje
+            // True for summary/total/waste lines in a cut list, which are not parts
+            isBomSummaryRow(pos, name) {
+                const words = /^(sum|summer|delsum|total|totalt|totalsum|kappsvinn|svinn|platebehov|materialbehov|areal totalt|totalt areal)(?![a-zæøå])/i;
+                return [pos, name].some(v => {
+                    const t = String(v || '').trim();
+                    if (!t) return false;
+                    return words.test(t) || /:\s*$/.test(t);
+                });
+            },
+
             importBomExcel(event) {
                 if (!this.canEdit()) return;
                 const file = event.target.files?.[0];
@@ -3028,13 +3038,15 @@ service cloud.firestore {
                         };
 
                         const importedItems = [];
+                        let skipped = 0;
                         for (let r = headerRowIdx + 1; r < matrix.length; r++) {
                             const row = matrix[r];
                             const posRaw = String(row[0] || '').trim();
                             const delName = String(row[1] || '').trim();
 
-                            // Stop at summary rows ('Sum', 'Kappsvinn', etc.) or skip empty part names
-                            if (posRaw.toLowerCase().startsWith('sum') || posRaw.toLowerCase().startsWith('kappsvinn')) break;
+                            // Skip empty part names and summary rows ('Sum', 'Kappsvinn (anslag):', 'Platebehov …', etc.)
+                            if (!delName && !posRaw) continue;
+                            if (this.isBomSummaryRow(posRaw, delName)) { skipped++; continue; }
                             if (!delName) continue;
 
                             const qty = parseNum(row[2]) || 1;
@@ -3077,7 +3089,7 @@ service cloud.firestore {
                         event.target.value = '';
                         this.saveToStorage();
                         this.renderProjectDetail();
-                        this.showToast(`Importerte ${importedItems.length} linjer fra Excel-kapplisten!`, 'emerald');
+                        this.showToast(`Importerte ${importedItems.length} linjer fra Excel-kapplisten${skipped ? ` (hoppet over ${skipped} sum-/svinnrader)` : ''}!`, 'emerald');
                     } catch (err) {
                         this.showToast('Feil ved lesing av Excel-filen', 'amber');
                     }
