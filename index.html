@@ -1,820 +1,5 @@
 <!DOCTYPE html>
-<html lang="no" class="h-full bg-slate-950 text-slate-100"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
-        window.__firebase_config = firebaseConfig;
-        window.__initial_auth_token = initialAuthToken;
-        window.__app_id = appId;
-            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwNzk1OTg4OTA4MzU4NDY5OTM4NSIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzQyNjYxYjYwY2JjMzIzMTlfaW5kZXguaHRtbC03MDUifSwiZXhwIjoxNzk1MDc5MzI0LCJpYXQiOjE3OTUwNzU3MjQsImFsZyI6IlJTMjU2In0.dp5VfWSx0FUGmagVVy1QV4kRrKeybPfVdhaEDGlpnJlbvkqkpU3O_gvwPc8-TX9EZ3L4HRsZ6WP8HRMCUrGFNj6shHr0zYgGuvoYboFdVs_GSQPWqJqo5KAfXaASV-RVuTrjxeANFkTVGEyb2AaYSbco44vofeyXlNlycPKLwrxsNNeX63UWMCM-L8K6M-wkYUSvNkbhos6dQilwc5mBC7FiNgF5KbWdSfQAnigqBVvZUdqK3-d69MVw_P7QfuDuXyOpXSbwDksxx8UYsoXKi6r42r6hDwcMNCJ-5mp6oEyZzxAvEJHVMsO-HSVMJSw0Wxk4vep1hHTekJSsIdZg3g","c_42661b60cbc32319_index.html-705")</script><script data-bard-client-injected="true">
-  document.addEventListener('input', (event) => {
-    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
-      const clonedDoc = document.cloneNode(true);
-      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
-      injectedScripts.forEach(el => el.remove());
-      window.parent.postMessage({
-        type: 'inlineEdit',
-        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
-      }, '*');
-    }
-  });
-</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const SCROLL_KEYS = new Set([
-    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
-  ]);
-  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
-
-  function isTextEntryTarget(target) {
-    if (!target) return false;
-    const tagName = target.tagName;
-    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
-        tagName === 'SELECT' || target.isContentEditable === true;
-  }
-
-  // An element absorbs the key only if it both overflows on the axis being
-  // scrolled and is configured to scroll on that axis. The cheap dimension
-  // test runs first because getComputedStyle forces a style recalc, and this
-  // runs on every keypress. Each axis is read from its own longhand: the
-  // 'overflow' shorthand serializes as two values when the axes differ, which
-  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
-  function canScroll(node, horizontal) {
-    const overflows = horizontal ? node.scrollWidth > node.clientWidth
-                                 : node.scrollHeight > node.clientHeight;
-    if (!overflows) return false;
-    const style = window.getComputedStyle(node);
-    const overflow = horizontal ? style.overflowX : style.overflowY;
-    return overflow === 'auto' || overflow === 'scroll';
-  }
-
-  // Walks up from the event target so nested scrollers keep their behavior.
-  // <body> is included because pages that pin the root height make it the
-  // scroll container.
-  function hasScrollableAncestor(target, horizontal) {
-    let node = target;
-    while (node && node !== document.documentElement) {
-      if (canScroll(node, horizontal)) return true;
-      node = node.parentElement;
-    }
-    return false;
-  }
-
-  function rootCanScroll(horizontal) {
-    const scroller = document.scrollingElement || document.documentElement;
-    if (!scroller) return false;
-    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
-    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
-                      : scroller.scrollHeight > window.innerHeight + 1;
-  }
-
-  window.addEventListener('keydown', function(event) {
-    if (!SCROLL_KEYS.has(event.key)) return;
-    if (event.defaultPrevented) return;
-    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
-    // reserved for shortcuts, so none of them are scroll intent.
-    if (event.altKey || event.metaKey || event.ctrlKey) return;
-
-    const target = event.target;
-    if (isTextEntryTarget(target)) return;
-
-    // Anything that can still absorb the scroll gets to keep it.
-    const horizontal = HORIZONTAL_KEYS.has(event.key);
-    if (rootCanScroll(horizontal)) return;
-    if (hasScrollableAncestor(target, horizontal)) return;
-
-    event.preventDefault();
-  }, {capture: true, passive: false});
-})();</script><script data-bard-client-injected="true">(function() {
-  // Ensure this script is executed only once
-  if (window.firebaseAuthBridgeScriptLoaded) {
-    return;
-  }
-  window.firebaseAuthBridgeScriptLoaded = true;
-
-  let nextTokenPromiseId = 0;
-
-  // Stores { resolve, reject } for ongoing token requests
-  const pendingTokenPromises = {};
-
-  // Listen for messages from the Host Application
-  window.addEventListener('message', function(event) {
-
-    const messageData = event.data;
-
-  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
-      const { success, token, error, promiseId } = messageData ?? {};
-      if (pendingTokenPromises[promiseId]) {
-        if (success) {
-          pendingTokenPromises[promiseId].resolve(token);
-        } else {
-          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
-        }
-        delete pendingTokenPromises[promiseId];
-      }
-    }
-  });
-
-  // Expose a function for the Generated App to request a new Firebase token
-  window.requestNewFirebaseToken = function() {
-    const currentPromiseId = nextTokenPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingTokenPromises[currentPromiseId] = { resolve, reject };
-    });
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({
-        type: 'REQUEST_NEW_FIREBASE_TOKEN',
-        promiseId: currentPromiseId
-      }, '*');
-    } else {
-      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
-      delete pendingTokenPromises[currentPromiseId];
-    }
-    return promise;
-  };
-})();</script><script data-bard-client-injected="true">
-let realOriginalGetUserMedia = null;
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-}
-
-(function() {
-  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
-    try {
-      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
-        get: function() {
-          return undefined; // Or throw an error
-        },
-        configurable: false
-      });
-    } catch (error) {
-      console.error("Error defining prototype getter:", error);
-    }
-  }
-})();
-
-(function() {
-  const pendingMediaResolvers = {};
-  let nextMediaPromiseId = 0;
-
-  function requestMediaPermissions(constraints) {
-    const mediaPromiseId = nextMediaPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingMediaResolvers[mediaPromiseId] = (granted) => {
-        delete pendingMediaResolvers[mediaPromiseId];
-        resolve(granted);
-      };
-    });
-
-    window.parent.postMessage({
-      type: 'requestMediaPermission',
-      constraints: constraints,
-      promiseId: mediaPromiseId,
-    }, '*');
-
-    return promise;
-  }
-
-  let originalGetUserMedia = realOriginalGetUserMedia;
-
-  function interceptGetUserMedia() {
-    if (navigator.mediaDevices) {
-      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
-        value: function(constraints) {
-          return requestMediaPermissions(constraints).then((granted) => {
-            if (granted) {
-              if (originalGetUserMedia) {
-                return originalGetUserMedia(constraints);
-              } else {
-                throw new Error("Original getUserMedia not available.");
-              }
-            } else {
-              throw new DOMException('Permission denied', 'NotAllowedError');
-            }
-          });
-        },
-        writable: false,
-        configurable: false
-      });
-    }
-  }
-
-  interceptGetUserMedia();
-
-  const observer = new MutationObserver(function(mutationsList, observer) {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'childList' && mutation.addedNodes) {
-        mutation.addedNodes.forEach(node => {
-          if (node === navigator.mediaDevices) {
-            interceptGetUserMedia();
-          }
-        });
-      }
-    }
-  });
-
-  function interceptSpeechRecognition() {
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      return;
-    }
-
-    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    const SpeechRecognitionWrapper = function(...args) {
-      const recognizer = new OriginalSpeechRecognition(...args);
-      const originalStart = recognizer.start.bind(recognizer);
-
-      recognizer.start = function() {
-        requestMediaPermissions({ audio: true }).then(granted => {
-          if (granted) {
-            originalStart();
-          } else {
-            const errorEvent = new SpeechRecognitionErrorEvent('error');
-            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
-            recognizer.dispatchEvent(errorEvent);
-          }
-        });
-      };
-
-      return recognizer;
-    };
-
-    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
-    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
-
-    if (window.SpeechRecognition) {
-      window.SpeechRecognition = SpeechRecognitionWrapper;
-    }
-    if (window.webkitSpeechRecognition) {
-      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
-    }
-  }
-
-  interceptSpeechRecognition();
-
-  window.addEventListener('message', function(event) {
-    if (event.data) {
-      if (event.data.type === 'resolveMediaPermission') {
-        const { promiseId, granted } = event.data;
-        if (pendingMediaResolvers[promiseId]) {
-          pendingMediaResolvers[promiseId](granted);
-        }
-      }
-    }
-  });
-
-})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
-function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
-
- Copyright The Closure Library Authors.
- SPDX-License-Identifier: Apache-2.0
-*/
-function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
-let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
-null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
-G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
-16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
-(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
-(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
-url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
-</script><script data-bard-client-injected="true">((function(modelInformation) {
-  const originalFetch = window.fetch;
-  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
-  let googleLlmBaseApiUrls = [
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
-  ];
-  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-    );
-  });
-  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-
-  const pendingFetchResolvers = {};
-  let nextPromiseId = 0;
-
-  function handleStringInput(input, optionsArgument) {
-    const actualUrl = input;
-    const fetchCallArgs = [actualUrl, optionsArgument];
-    const effectiveOptions = optionsArgument || {};
-    const bodyForApiKeyCheck = effectiveOptions.body;
-    const bodyForPostMessage = effectiveOptions.body;
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  function handleRequestInput(input, optionsArgument) {
-    const actualUrl = input.url;
-    const fetchCallArgs = [input, optionsArgument];
-    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (optionsArgument) {
-      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
-      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
-      if ('body' in optionsArgument) {
-        bodyForApiKeyCheck = optionsArgument.body;
-        bodyForPostMessage = optionsArgument.body;
-      } else {
-        bodyForApiKeyCheck = undefined;
-        bodyForPostMessage = input.body;
-      }
-    } else {
-      bodyForApiKeyCheck = undefined;
-      bodyForPostMessage = input.body;
-    }
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  window.fetch = function(input, optionsArgument) {
-    let actualUrl;
-    let fetchCallArgs;
-    let effectiveOptions = {};
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (typeof input === 'string') {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
-    } else if (input instanceof Request) {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
-    } else {
-      return originalFetch.apply(window, [input, optionsArgument]);
-    }
-
-    effectiveOptions.method = effectiveOptions.method || 'GET';
-    if (!effectiveOptions.headers) {
-      effectiveOptions.headers = new Headers();
-    }
-
-
-    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
-      let apiKeyIsNull = true;
-
-      const regex = new RegExp("models/([^:]+)");
-      const modelNameMatch = actualUrl.match(regex);
-      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
-
-
-      try {
-        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
-        const apiKeyParam = urlObject.searchParams.get('key');
-        if (apiKeyParam) {
-          apiKeyIsNull = false;
-        }
-      } catch (e) {
-        // Continue checks even if URL parsing fails
-      }
-
-      if (apiKeyIsNull && effectiveOptions.headers) {
-        const h = new Headers(effectiveOptions.headers);
-        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
-        if (apiKeyHeaderValue) {
-          apiKeyIsNull = false;
-          return originalFetch.apply(window, fetchCallArgs);
-        }
-      }
-
-      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
-        try {
-          const bodyData = JSON.parse(bodyForApiKeyCheck);
-          if (bodyData && bodyData.apiKey) {
-            apiKeyIsNull = false;
-            return originalFetch.apply(window, fetchCallArgs);
-          }
-        } catch (e) {
-          // Ignore JSON parsing errors
-        }
-      }
-
-      if(apiKeyIsNull) {
-        const promiseId = nextPromiseId++;
-        const promise = new Promise((resolve) => {
-          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
-            delete pendingFetchResolvers[promiseId];
-            resolve(resolvedResponse);
-          };
-        });
-
-        let serializedBodyForPostMessage;
-        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
-            serializedBodyForPostMessage = bodyForPostMessage;
-        } else if (bodyForPostMessage instanceof ReadableStream) {
-            serializedBodyForPostMessage = null;
-        } else {
-            try {
-                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
-            } catch (e) {
-                serializedBodyForPostMessage = null;
-            }
-        }
-
-        const messageOptions = {
-            method: effectiveOptions.method,
-            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
-            body: serializedBodyForPostMessage
-        };
-
-        window.parent.postMessage({
-          type: 'requestFetch',
-          url: actualUrl,
-          modelName: modelName,
-          options: messageOptions,
-          promiseId: promiseId,
-        }, '*');
-
-        return promise;
-      }
-      return originalFetch.apply(window, fetchCallArgs);
-    }
-    return originalFetch.apply(window, fetchCallArgs);
-  };
-
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'resolveFetch') {
-      const { promiseId, response } = event.data;
-      if (pendingFetchResolvers[promiseId]) {
-        try {
-          const reconstructedResponse = new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: new Headers(response.headers),
-          });
-          pendingFetchResolvers[promiseId](reconstructedResponse);
-        } catch (error) {
-          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
-        }
-      }
-    }
-  });
-
-}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
-  const OVERLAY_SELECTOR =
-    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
-
-  function isVisibleOverlay(element) {
-    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
-      return false;
-    }
-    if (window.getComputedStyle(element).visibility === 'hidden') {
-      return false;
-    }
-    for (let cur = element; cur; cur = cur.parentElement) {
-      if (window.getComputedStyle(cur).display === 'none') {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function hasOpenOverlay() {
-    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
-    for (let i = 0; i < candidates.length; i++) {
-      if (isVisibleOverlay(candidates[i])) {
-        return true;
-      }
-    }
-    try {
-      if (document.querySelector('[popover]:popover-open')) {
-        return true;
-      }
-    } catch (e) {
-      // Ignore engines that do not support :popover-open.
-    }
-    return false;
-  }
-
-  function isNonEmptySearchInput(target) {
-    return (
-      Boolean(target) &&
-      target.tagName === 'INPUT' &&
-      typeof target.type === 'string' &&
-      target.type.toLowerCase() === 'search' &&
-      typeof target.value === 'string' &&
-      target.value.length > 0
-    );
-  }
-
-  function shouldIgnoreEscape(event) {
-    return (
-      event.key !== 'Escape' ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      event.isComposing ||
-      event.repeat ||
-      event.keyCode === 229 ||
-      isNonEmptySearchInput(event.target)
-    );
-  }
-
-  let shouldIgnoreCaptureState = false;
-
-  window.addEventListener(
-    'keydown',
-    function(event) {
-      if (event.key === 'Escape') {
-        shouldIgnoreCaptureState =
-          hasOpenOverlay() || isNonEmptySearchInput(event.target);
-      }
-    },
-    {capture: true},
-  );
-
-  window.addEventListener('keydown', function(event) {
-    if (
-      shouldIgnoreEscape(event) ||
-      event.defaultPrevented ||
-      shouldIgnoreCaptureState
-    ) {
-      return;
-    }
-    const wasBlockedOnCapture = shouldIgnoreCaptureState;
-    queueMicrotask(function() {
-      if (event.defaultPrevented || wasBlockedOnCapture) {
-        return;
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({'type': 'escapeKey'}, '*');
-      }
-    });
-  });
-})();</script><script data-bard-client-injected="true">(function() {
-  function normalizeSlug(str) {
-    try {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^p{L}p{N}s_-]/gu, '')
-        .replace(/s+/g, '-');
-    } catch (e) {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9s_-]/g, '')
-        .replace(/s+/g, '-');
-    }
-  }
-
-  function findTargetElement(hash) {
-    if (!hash || hash === '#') {
-      return null;
-    }
-    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
-    let decodedId = rawId;
-    try {
-      decodedId = decodeURIComponent(rawId);
-    } catch (e) {
-      // Ignore URI malformed errors.
-    }
-
-    // 1. Direct ID match (raw and decoded).
-    let target = document.getElementById(rawId) || document.getElementById(decodedId);
-    if (target) {
-      return target;
-    }
-
-    // 2. Name attribute match (<a name="...">).
-    try {
-      if (typeof CSS !== 'undefined' && CSS.escape) {
-        target =
-          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
-          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
-      } else {
-        const namedElements = document.getElementsByName(rawId);
-        if (namedElements && namedElements.length > 0) {
-          return namedElements[0];
-        }
-      }
-    } catch (e) {
-      // Ignore querySelector syntax errors.
-    }
-    if (target) {
-      return target;
-    }
-
-    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
-    const targetSlug = normalizeSlug(decodedId);
-    if (targetSlug) {
-      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
-        if (normalizeSlug(heading.textContent || '') === targetSlug) {
-          return heading;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  document.addEventListener('click', function(event) {
-    const target = event.target;
-    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
-    if (!anchor) {
-      return;
-    }
-
-    const href = anchor.getAttribute('href');
-    if (
-      !href ||
-      href.trim().toLowerCase().startsWith('javascript:') ||
-      anchor.hasAttribute('download')
-    ) {
-      return;
-    }
-
-    // Check if the link is an in-page hash / anchor link.
-    if (href.startsWith('#')) {
-      event.preventDefault();
-      const targetElement = findTargetElement(href);
-      if (targetElement) {
-        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
-      return;
-    }
-
-    // Check if the URL has the same origin/pathname but with a hash.
-    try {
-      const url = new URL(anchor.href, window.location.href);
-      if (
-        url.hash &&
-        url.origin === window.location.origin &&
-        url.pathname === window.location.pathname
-      ) {
-        event.preventDefault();
-        const targetElement = findTargetElement(url.hash);
-        if (targetElement) {
-          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
-        return;
-      }
-    } catch (e) {
-      // Fall through if URL parsing fails.
-    }
-
-    // For all external or full navigation links, prevent iframe-level navigation
-    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
-    // safely in a new tab/window.
-    if (anchor.target !== '_blank') {
-      event.preventDefault();
-      window.open(anchor.href, '_blank', 'noopener,noreferrer');
-    }
-  }, {capture: true});
-})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const originalConsoleLog = console.log;
-  const originalConsoleError = console.error;
-
-    /**
-   * Normalizes an error event or a promise rejection reason into a structured error object.
-   * @param {*} errorEventOrReason The error object or reason.
-   * @return {object} Structured error data { message, name, stack }.
-   */
-  function getErrorObject(errorEventOrReason) {
-    if (errorEventOrReason instanceof Error) {
-      return {
-        message: errorEventOrReason.message,
-        name: errorEventOrReason.name,
-        stack: errorEventOrReason.stack,
-      };
-    }
-    // Fallback for non-Error objects.
-    try {
-      return {
-        message: JSON.stringify(errorEventOrReason),
-        name: 'UnknownErrorType',
-        stack: null,
-      };
-    } catch (e) {
-      return {
-        message: String(errorEventOrReason),
-        name: 'UnknownErrorTypeNonStringifiable',
-        stack: null,
-      };
-    }
-  }
-
-  /**
-   * Converts an array of arguments (from log/error) into a single string.
-   * Handles Error objects specially to include their message and stack.
-   * @param {Array<*>} args - Arguments passed to console methods.
-   * @return {string} A string representation of the arguments.
-   */
-  function stringifyArgs(args) {
-    return args
-      .map((arg) => {
-        if (arg instanceof Error) {
-          const {message, stack} = arg;
-          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
-        }
-        if (typeof arg === 'object' && arg !== null) {
-          try {
-            return JSON.stringify(arg);
-          } catch (error) {
-            return '[Circular Object]';
-          }
-        } else {
-          return String(arg);
-        }
-      })
-      .join(' ');
-  }
-
-  console.log = function(...args) {
-    const logString = stringifyArgs(args);
-    window.parent.postMessage({ type: 'log', message: logString }, '*');
-    originalConsoleLog.apply(console, args);
-  };
-
-  console.error = function(...args) {
-    let errorData;
-    if (args.length > 0 && args[0] instanceof Error) {
-      const err = args[0];
-      // If the first arg is an Error, capture its details.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        ...getErrorObject(err),
-        rawArgsString: stringifyArgs(args.slice(1)),
-        timestamp: new Date().toISOString(),
-      };
-    } else {
-      // If not an Error object, treat all args as a general error message.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        message: stringifyArgs(args),
-        name: 'ConsoleLoggedError',
-        stack: null,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    window.parent.postMessage(errorData, '*');
-    originalConsoleError.apply(console, args);
-  };
-
-  // Listen for global unhandled synchronous errors.
-  window.addEventListener('error', function(event) {
-    const errorDetails = event.error ? getErrorObject(event.error) : {
-      message: event.message,
-      name: 'GlobalError',
-      stack: null,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno,
-    };
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'global',
-      ...errorDetails,
-      message: errorDetails.message || event.message,
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-  // Listen for unhandled promise rejections (asynchronous errors).
-  window.addEventListener('unhandledrejection', function(event) {
-    const errorDetails = getErrorObject(event.reason);
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'unhandledrejection',
-      ...errorDetails,
-      message: errorDetails.message || 'Unhandled Promise Rejection',
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-})();</script>
+<html lang="no" class="h-full bg-slate-950 text-slate-100"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1823,6 +1008,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
                             Ny bruker
                         </button>
                     </div>
+                    <button type="button" onclick="app.resetPassword()" class="w-full text-[11px] text-sky-400 hover:text-sky-300 underline">
+                        Glemt passord / sett passord for Google-konto
+                    </button>
+                    <p class="text-[10px] text-slate-500 leading-relaxed">Tips: På iPhone (app fra Hjem-skjerm) fungerer e-post + passord best. Bruk samme konto på PC og iPhone.</p>
                 </form>
 
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
@@ -1858,8 +1047,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 service cloud.firestore {
   match /databases/{database}/documents {
     match /projects/{projectId} {
-      function isSignedIn() { return request.auth != null; }
-      function userEmail() { return request.auth.token.email; }
+      function isSignedIn() { return request.auth != null &amp;&amp; request.auth.token.email != null; }
+      function userEmail() { return request.auth.token.email.lower(); }
       function isOwner() { return isSignedIn() &amp;&amp; resource.data.ownerEmail == userEmail(); }
       function isMember() { return isSignedIn() &amp;&amp; (userEmail() in resource.data.memberEmails); }
       function canWrite() {
@@ -1867,7 +1056,9 @@ service cloud.firestore {
       }
       allow read: if isOwner() || isMember();
       allow create: if isSignedIn() &amp;&amp; request.resource.data.ownerEmail == userEmail();
-      allow update: if isOwner() || (canWrite() &amp;&amp; request.resource.data.permissions == resource.data.permissions);
+      allow update: if isOwner() || (canWrite()
+        &amp;&amp; request.resource.data.permissions == resource.data.permissions
+        &amp;&amp; request.resource.data.ownerEmail == resource.data.ownerEmail);
       allow delete: if isOwner();
     }
   }
@@ -2224,9 +1415,16 @@ service cloud.firestore {
                     }
                 } else {
                     this.projects = JSON.parse(JSON.stringify(SAMPLE_PROJECTS));
-                    this.saveToStorage(false);
+                    this.projects.forEach(p => { p.isSample = true; p.modifiedAt = 0; });
+                    safeStorage.setItem('verksted_projects_v2', JSON.stringify(this.projects));
                 }
                 this.projects.forEach(p => this.syncProjectPermissionsStruct(p));
+                this.projects.forEach(p => this.rememberSignature(p));
+
+                // Real network status (replaces the old simulated toggle as the default)
+                this.isOnline = navigator.onLine !== false;
+                window.addEventListener('online', () => { this.isOnline = true; this.updateSyncBadgeUI(); });
+                window.addEventListener('offline', () => { this.isOnline = false; this.updateSyncBadgeUI(); });
                 this.updateSyncBadgeUI();
                 this.updateReminderCountBadge();
                 this.renderDashboard();
@@ -2262,6 +1460,23 @@ service cloud.firestore {
                 if (this.firebaseUser && this.firebaseUser.email && !p.ownerEmail) {
                     p.ownerEmail = this.firebaseUser.email;
                 }
+                if (p.ownerEmail) p.ownerEmail = p.ownerEmail.trim().toLowerCase();
+            },
+
+            // ---- Change detection for sync: cheap hash of the project content (excluding sync metadata) ----
+            _sigs: {},
+            projectSignature(p) {
+                const { modifiedAt, isSample, ownerEmail, memberEmails, permissions, ...rest } = p;
+                const str = JSON.stringify(rest);
+                let h = 2166136261;
+                for (let i = 0; i < str.length; i++) {
+                    h ^= str.charCodeAt(i);
+                    h = Math.imul(h, 16777619);
+                }
+                return str.length + ':' + (h >>> 0).toString(36);
+            },
+            rememberSignature(p) {
+                this._sigs[p.id] = this.projectSignature(p);
             },
 
             // Helper to extract all checklist items across all tiles of a project
@@ -2289,40 +1504,52 @@ service cloud.firestore {
 
             saveToStorage(showNotification = true) {
                 this.projects.forEach(p => this.syncProjectPermissionsStruct(p));
+                // Find every project that changed since last save/sync and stamp it with a precise timestamp
+                const changed = [];
+                this.projects.forEach(p => {
+                    const sig = this.projectSignature(p);
+                    if (this._sigs[p.id] !== sig) {
+                        p.modifiedAt = Date.now();
+                        delete p.isSample;
+                        this._sigs[p.id] = sig;
+                        changed.push(p);
+                    }
+                });
                 safeStorage.setItem('verksted_projects_v2', JSON.stringify(this.projects));
                 this.updateReminderCountBadge();
 
-                // If connected to Firebase Firestore & logged in, push updated project to Firestore
+                // If logged in, push all changed projects to Firestore (queued offline by the Firestore SDK)
                 if (window.fbBridge && this.firebaseUser) {
-                    const current = this.getCurrentProject();
-                    if (current) {
-                        window.fbBridge.saveProject(current).catch(() => {});
-                    }
+                    changed.forEach(p => window.fbBridge.saveProject(p));
                 }
 
                 if (!this.isOnline) {
-                    this.pendingSyncCount++;
                     this.updateSyncBadgeUI();
                     if (showNotification) {
                         this.showToast('Lagret lokalt i IndexedDB/Cache (synkroniseres ved nett)', 'amber');
                     }
                 } else {
                     if (showNotification) {
-                        this.showToast(this.firebaseUser ? 'Synkronisert med Firebase Firestore' : 'Lagret lokalt på enheten', 'emerald');
+                        this.showToast(this.firebaseUser ? 'Lagret og sendt til skyen' : 'Lagret lokalt på enheten (logg inn for synk)', 'emerald');
                     }
                 }
             },
 
+            syncError: null,
+
             toggleOnlineMode() {
+                // Not logged in: the badge opens the login dialog instead
+                if (!this.firebaseUser) {
+                    this.openFirebaseModal();
+                    return;
+                }
                 this.isOnline = !this.isOnline;
                 if (window.fbBridge) {
                     window.fbBridge.setNetworkMode(this.isOnline);
                 }
-                if (this.isOnline && this.pendingSyncCount > 0) {
-                    const count = this.pendingSyncCount;
-                    this.pendingSyncCount = 0;
-                    this.showToast(`Tilkoblet! Synkroniserte ${count} lokale endringer til Firestore.`, 'emerald');
-                } else if (!this.isOnline) {
+                if (this.isOnline) {
+                    this.showToast('Tilkoblet igjen – lokale endringer sendes til skyen.', 'emerald');
+                } else {
                     this.showToast('Offline-modus aktivert. Du kan fortsette å jobbe og ta bilder uten nett.', 'amber');
                 }
                 this.updateSyncBadgeUI();
@@ -2334,11 +1561,30 @@ service cloud.firestore {
                 const text = document.getElementById('sync-text');
                 const queue = document.getElementById('sync-queue-badge');
 
-                if (this.isOnline) {
-                    badge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer select-none bg-emerald-950/60 border-emerald-700/60 text-emerald-300';
-                    dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-                    text.textContent = 'Online • Synkronisert';
+                const base = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer select-none ';
+                if (this.isOnline && this.syncError) {
+                    badge.className = base + 'bg-red-950/60 border-red-700/60 text-red-300';
+                    dot.className = 'w-2 h-2 rounded-full bg-red-400';
+                    text.textContent = 'Synkfeil';
+                    badge.title = this.syncError;
                     queue.classList.add('hidden');
+                } else if (this.isOnline && !this.firebaseUser) {
+                    badge.className = base + 'bg-slate-800/80 border-slate-600/60 text-slate-300';
+                    dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+                    text.textContent = 'Kun lokalt • Logg inn for synk';
+                    badge.title = 'Klikk for å logge inn og synkronisere mellom enheter';
+                    queue.classList.add('hidden');
+                } else if (this.isOnline) {
+                    badge.className = base + 'bg-emerald-950/60 border-emerald-700/60 text-emerald-300';
+                    dot.className = 'w-2 h-2 rounded-full bg-emerald-400' + (this.pendingSyncCount > 0 ? ' animate-pulse' : '');
+                    text.textContent = this.pendingSyncCount > 0 ? 'Synkroniserer…' : 'Online • Synkronisert';
+                    badge.title = 'Klikk for å gå i offline-modus';
+                    if (this.pendingSyncCount > 0) {
+                        queue.textContent = `${this.pendingSyncCount} i kø`;
+                        queue.classList.remove('hidden');
+                    } else {
+                        queue.classList.add('hidden');
+                    }
                 } else {
                     badge.className = 'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition cursor-pointer select-none bg-amber-950/70 border-amber-600/70 text-amber-300';
                     dot.className = 'w-2 h-2 rounded-full bg-amber-400';
@@ -3740,6 +2986,7 @@ service cloud.firestore {
                 if (!p) return;
                 const delId = p.id;
                 this.projects = this.projects.filter(x => x.id !== delId);
+                delete this._sigs[delId];
                 if (window.fbBridge && this.firebaseUser) {
                     window.fbBridge.deleteProject(delId).catch(() => {});
                 }
@@ -3785,6 +3032,16 @@ service cloud.firestore {
             async loginWithGoogle() {
                 if (!window.fbBridge) return;
                 await window.fbBridge.googleLogin();
+            },
+
+            async resetPassword() {
+                const email = document.getElementById('fb-auth-email').value.trim();
+                if (!email) {
+                    this.showToast('Skriv inn e-postadressen først', 'amber');
+                    return;
+                }
+                if (!window.fbBridge) return;
+                await window.fbBridge.resetPassword(email);
             },
 
             async logoutFirebase() {
@@ -3957,6 +3214,8 @@ self.addEventListener('fetch', (event) => {
             }
         };
 
+        // Expose the app object to the Firebase module (top-level const is not a window property)
+        window.app = app;
         window.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 
@@ -3965,31 +3224,33 @@ self.addEventListener('fetch', (event) => {
     <!-- ========================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { 
+        import {
             getFirestore,
-            initializeFirestore, 
-            persistentLocalCache, 
+            initializeFirestore,
+            persistentLocalCache,
             persistentMultipleTabManager,
-            collection, 
-            doc, 
-            setDoc, 
-            deleteDoc, 
-            onSnapshot, 
+            collection,
+            doc,
+            setDoc,
+            deleteDoc,
+            onSnapshot,
             query,
+            where,
             enableNetwork,
             disableNetwork
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { 
-            getAuth, 
-            onAuthStateChanged, 
-            signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            signOut 
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            sendPasswordResetEmail,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // Your web app's Firebase configuration (verksted-planlegger)
+        // Firebase web config (public identifiers – access is protected by Firestore Security Rules)
         const firebaseConfig = {
             apiKey: "AIzaSyBJMLMRS5em0gxBI0caLmO1VWzW9IIc2Es",
             authDomain: "verksted-planlegger.firebaseapp.com",
@@ -3999,7 +3260,12 @@ self.addEventListener('fetch', (event) => {
             appId: "1:1072752531495:web:786bd55a60c112f1d0d602"
         };
 
-        let fbApp, db, auth, unsubscribeProjects = null;
+        // Firestore documents are limited to 1 MiB. Stay a bit below it.
+        const MAX_DOC_BYTES = 1000000;
+        const SYNCED_IDS_KEY = 'verksted_synced_ids';
+
+        let fbApp, db, auth;
+        let unsubscribers = [];
 
         function updateFirebaseModalUI(statusText, color = 'emerald', userEmail = null) {
             const topDot = document.getElementById('fb-status-dot');
@@ -4010,7 +3276,7 @@ self.addEventListener('fetch', (event) => {
             const authForms = document.getElementById('fb-auth-forms');
             const emailLabel = document.getElementById('fb-current-user-email');
 
-            const dotClass = color === 'emerald' ? 'bg-emerald-400' : 'bg-amber-400';
+            const dotClass = color === 'emerald' ? 'bg-emerald-400' : (color === 'red' ? 'bg-red-400' : 'bg-amber-400');
             if (topDot) topDot.className = `w-2 h-2 rounded-full ${dotClass}`;
             if (modalDot) modalDot.className = `w-2.5 h-2.5 rounded-full ${dotClass}`;
             if (modalText) modalText.textContent = statusText;
@@ -4021,10 +3287,50 @@ self.addEventListener('fetch', (event) => {
                 if (authForms) authForms.classList.add('hidden');
                 if (emailLabel) emailLabel.textContent = userEmail;
             } else {
-                if (topLabel) topLabel.textContent = 'verksted-planlegger';
+                if (topLabel) topLabel.textContent = 'Logg inn';
                 if (loggedInBox) loggedInBox.classList.add('hidden');
                 if (authForms) authForms.classList.remove('hidden');
             }
+        }
+
+        function loadSyncedIds() {
+            try { return new Set(JSON.parse(safeStorage.getItem(SYNCED_IDS_KEY) || '[]')); }
+            catch (e) { return new Set(); }
+        }
+        function saveSyncedIds(set) {
+            safeStorage.setItem(SYNCED_IDS_KEY, JSON.stringify([...set]));
+        }
+
+        // Firestore rejects `undefined` values – a JSON round-trip strips them
+        function toCloudDoc(project) {
+            return JSON.parse(JSON.stringify(project));
+        }
+
+        function setSyncError(msg) {
+            window.app.syncError = msg;
+            window.app.updateSyncBadgeUI();
+        }
+
+        let pending = 0;
+        function trackWrite(promise, label) {
+            pending++;
+            window.app.pendingSyncCount = pending;
+            window.app.updateSyncBadgeUI();
+            return promise.then(() => {
+                window.app.syncError = null;
+            }).catch((err) => {
+                console.error('Firestore-feil', label, err);
+                const code = err && err.code ? err.code : (err && err.message) || 'ukjent';
+                const msg = code === 'permission-denied'
+                    ? 'Ingen tilgang (sjekk Firestore-reglene)'
+                    : `Kunne ikke lagre til skyen (${code})`;
+                setSyncError(msg);
+                window.app.showToast(msg, 'amber');
+            }).finally(() => {
+                pending = Math.max(0, pending - 1);
+                window.app.pendingSyncCount = pending;
+                window.app.updateSyncBadgeUI();
+            });
         }
 
         try {
@@ -4036,55 +3342,161 @@ self.addEventListener('fetch', (event) => {
                     })
                 });
             } catch (cacheErr) {
-                // Fallback to standard in-memory Firestore if IndexedDB is restricted in preview iframe
+                // Fallback when IndexedDB is unavailable (private mode etc.)
                 db = getFirestore(fbApp);
             }
             auth = getAuth(fbApp);
             window.app.firebaseReady = true;
-            updateFirebaseModalUI('Tilkoblet verksted-planlegger (Ikke innlogget ennå)', 'amber');
+            updateFirebaseModalUI('Ikke innlogget – data lagres kun på denne enheten', 'amber');
         } catch (err) {
             updateFirebaseModalUI('Kjører i lokal hurtigbuffer-modus', 'amber');
         }
 
+        // ------------------------------------------------------------------
+        // Two-way merge between local projects and the cloud.
+        //  - The newest version (modifiedAt) wins per project.
+        //  - Local-only projects are uploaded (except untouched sample projects).
+        //  - Projects that were synced before but are gone from the cloud
+        //    were deleted on another device and are removed locally.
+        // ------------------------------------------------------------------
         function subscribeToFirestoreProjects(user) {
-            if (unsubscribeProjects) unsubscribeProjects();
-            const q = query(collection(db, 'projects'));
-            unsubscribeProjects = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
-                if (snapshot.empty) return;
-                const cloudProjects = [];
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const email = (user.email || '').toLowerCase();
-                    const isOwner = !data.ownerEmail || data.ownerEmail.toLowerCase() === email;
-                    const isMember = Array.isArray(data.memberEmails) && data.memberEmails.includes(email);
-                    if (isOwner || isMember) {
-                        cloudProjects.push(data);
+            unsubscribers.forEach(u => u());
+            unsubscribers = [];
+            const email = (user.email || '').trim().toLowerCase();
+            const projectsRef = collection(db, 'projects');
+            // Firestore rules are not filters: each query must match what the rules allow
+            const sources = {
+                owned: { q: query(projectsRef, where('ownerEmail', '==', email)), docs: new Map(), fromServer: false },
+                shared: { q: query(projectsRef, where('memberEmails', 'array-contains', email)), docs: new Map(), fromServer: false }
+            };
+
+            const merge = () => {
+                const app = window.app;
+                const cloud = new Map([...sources.owned.docs, ...sources.shared.docs]);
+                const complete = sources.owned.fromServer && sources.shared.fromServer;
+                const synced = loadSyncedIds();
+                const localById = new Map(app.projects.map(p => [p.id, p]));
+                let changedLocally = false;
+                const toUpload = [];
+
+                // Cloud -> local
+                cloud.forEach((cp, id) => {
+                    const lp = localById.get(id);
+                    if (!lp || lp.isSample || (cp.modifiedAt || 0) > (lp.modifiedAt || 0)) {
+                        if (!lp || app.projectSignature(lp) !== app.projectSignature(cp)) {
+                            localById.set(id, cp);
+                            app.rememberSignature(cp);
+                            changedLocally = true;
+                        }
+                    } else if ((lp.modifiedAt || 0) > (cp.modifiedAt || 0)) {
+                        toUpload.push(lp);
                     }
+                    synced.add(id);
                 });
-                if (cloudProjects.length > 0) {
-                    window.app.projects = cloudProjects;
-                    safeStorage.setItem('verksted_projects_v2', JSON.stringify(cloudProjects));
-                    window.app.renderDashboard();
-                    if (window.app.currentProjectId) {
-                        window.app.renderProjectDetail();
+
+                // Local projects missing in the cloud
+                if (complete) {
+                    [...localById.values()].forEach(lp => {
+                        if (cloud.has(lp.id)) return;
+                        if (lp.isSample) {
+                            // Hide demo projects once the account has real data
+                            if (cloud.size > 0) { localById.delete(lp.id); changedLocally = true; }
+                        } else if (synced.has(lp.id)) {
+                            // Deleted on another device
+                            localById.delete(lp.id);
+                            synced.delete(lp.id);
+                            changedLocally = true;
+                        } else {
+                            toUpload.push(lp);
+                        }
+                    });
+                }
+                saveSyncedIds(synced);
+
+                if (changedLocally) {
+                    // Keep the original ordering, new cloud projects first
+                    const order = app.projects.map(p => p.id);
+                    app.projects = [...localById.values()].sort((a, b) => {
+                        const ia = order.indexOf(a.id), ib = order.indexOf(b.id);
+                        if (ia === -1 && ib === -1) return (b.modifiedAt || 0) - (a.modifiedAt || 0);
+                        if (ia === -1) return -1;
+                        if (ib === -1) return 1;
+                        return ia - ib;
+                    });
+                    safeStorage.setItem('verksted_projects_v2', JSON.stringify(app.projects));
+                    app.updateReminderCountBadge();
+                    if (app.currentProjectId && !localById.has(app.currentProjectId)) {
+                        app.showDashboard();
+                        app.showToast('Prosjektet ble slettet på en annen enhet', 'amber');
+                    } else {
+                        app.renderDashboard();
+                        if (app.currentProjectId) app.renderProjectDetail();
                     }
                 }
-            }, () => {});
+                toUpload.forEach(p => window.fbBridge.saveProject(p));
+            };
+
+            Object.entries(sources).forEach(([key, src]) => {
+                const unsub = onSnapshot(src.q, { includeMetadataChanges: true }, (snapshot) => {
+                    src.docs = new Map();
+                    snapshot.forEach(d => src.docs.set(d.id, d.data()));
+                    if (!snapshot.metadata.fromCache) src.fromServer = true;
+                    if (!snapshot.metadata.hasPendingWrites) merge();
+                }, (err) => {
+                    console.error('Firestore-lytter feilet', key, err);
+                    setSyncError(err.code === 'permission-denied'
+                        ? 'Ingen lesetilgang – publiser oppdaterte Firestore-regler'
+                        : `Synk-feil (${err.code || err.message})`);
+                    updateFirebaseModalUI(`Feil mot Firestore: ${err.code || err.message}`, 'red', user.email);
+                });
+                unsubscribers.push(unsub);
+            });
         }
 
+        // Wait until app.init() has loaded local projects before merging with the cloud
+        const appReady = new Promise((resolve) => {
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => resolve());
+            else resolve();
+        });
+
         if (auth) {
-            try {
-                onAuthStateChanged(auth, (user) => {
-                    window.app.firebaseUser = user || null;
-                    if (user) {
-                        updateFirebaseModalUI(`Tilkoblet Firestore (${user.email})`, 'emerald', user.email);
-                        subscribeToFirestoreProjects(user);
-                    } else {
-                        if (unsubscribeProjects) unsubscribeProjects();
-                        updateFirebaseModalUI('Koblet til verksted-planlegger (Logg inn for skysynk)', 'amber', null);
-                    }
-                });
-            } catch (e) {}
+            onAuthStateChanged(auth, async (user) => {
+                await appReady;
+                window.app.firebaseUser = user || null;
+                window.app.syncError = null;
+                if (user) {
+                    updateFirebaseModalUI(`Synkroniserer med skyen (${user.email})`, 'emerald', user.email);
+                    // Claim local projects for this account
+                    window.app.projects.forEach(p => window.app.syncProjectPermissionsStruct(p));
+                    subscribeToFirestoreProjects(user);
+                } else {
+                    unsubscribers.forEach(u => u());
+                    unsubscribers = [];
+                    updateFirebaseModalUI('Ikke innlogget – data lagres kun på denne enheten', 'amber', null);
+                }
+                window.app.updateSyncBadgeUI();
+            });
+        }
+
+        function isIosStandalone() {
+            return window.navigator.standalone === true ||
+                (/iphone|ipad|ipod/i.test(navigator.userAgent) && window.matchMedia('(display-mode: standalone)').matches);
+        }
+
+        function authErrorText(err) {
+            const map = {
+                'auth/invalid-credential': 'Feil e-post eller passord',
+                'auth/wrong-password': 'Feil passord',
+                'auth/user-not-found': 'Fant ingen bruker med denne e-posten',
+                'auth/email-already-in-use': 'E-posten er allerede registrert – logg inn i stedet (eller bruk «Glemt passord»)',
+                'auth/weak-password': 'Passordet må ha minst 6 tegn',
+                'auth/invalid-email': 'Ugyldig e-postadresse',
+                'auth/operation-not-allowed': 'Innloggingsmetoden er ikke aktivert i Firebase Console',
+                'auth/unauthorized-domain': 'Domenet er ikke godkjent i Firebase Authentication',
+                'auth/popup-blocked': 'Popup ble blokkert av nettleseren',
+                'auth/network-request-failed': 'Ingen nettforbindelse'
+            };
+            return map[err.code] || err.code || err.message;
         }
 
         window.fbBridge = {
@@ -4093,62 +3505,85 @@ self.addEventListener('fetch', (event) => {
                 try {
                     if (mode === 'register') {
                         await createUserWithEmailAndPassword(auth, email, pass);
-                        window.app.showToast('Bruker opprettet og logget inn i Firebase!', 'emerald');
+                        window.app.showToast('Bruker opprettet og logget inn!', 'emerald');
                     } else {
                         await signInWithEmailAndPassword(auth, email, pass);
-                        window.app.showToast('Logget inn i Firebase!', 'emerald');
+                        window.app.showToast('Logget inn – synkroniserer…', 'emerald');
                     }
-                    await this.pushAllLocalProjects(window.app.projects);
+                    window.app.closeFirebaseModal();
                 } catch (err) {
-                    window.app.showToast(`Firebase Auth-melding: ${err.code || err.message} (Husk å aktivere Email/Password i Firebase Console)`, 'amber');
+                    window.app.showToast(`Innlogging feilet: ${authErrorText(err)}`, 'amber');
                 }
             },
 
             async googleLogin() {
                 if (!auth) return;
+                if (isIosStandalone()) {
+                    window.app.showToast('Google-popup virker ikke i Hjem-skjerm-appen på iPhone. Bruk e-post + passord (trykk «Glemt passord» for å sette et passord på Google-kontoen).', 'amber');
+                    return;
+                }
                 try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(auth, provider);
-                    window.app.showToast('Logget inn med Google!', 'emerald');
-                    await this.pushAllLocalProjects(window.app.projects);
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                    window.app.showToast('Logget inn med Google – synkroniserer…', 'emerald');
+                    window.app.closeFirebaseModal();
                 } catch (err) {
-                    window.app.showToast(`Google-innlogging: Husk å aktivere Google under Authentication i Firebase Console`, 'amber');
+                    window.app.showToast(`Google-innlogging feilet: ${authErrorText(err)}`, 'amber');
+                }
+            },
+
+            async resetPassword(email) {
+                if (!auth) return;
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    window.app.showToast('E-post for å sette nytt passord er sendt', 'emerald');
+                } catch (err) {
+                    window.app.showToast(`Kunne ikke sende e-post: ${authErrorText(err)}`, 'amber');
                 }
             },
 
             async logout() {
                 if (!auth) return;
                 await signOut(auth);
-                window.app.showToast('Logget ut av Firebase (fortsetter lokalt)', 'amber');
+                saveSyncedIds(new Set());
+                window.app.showToast('Logget ut (fortsetter lokalt)', 'amber');
             },
 
-            async saveProject(project) {
-                if (!db || !auth || !auth.currentUser) return;
-                project.ownerEmail = project.ownerEmail || auth.currentUser.email;
+            saveProject(project) {
+                if (!db || !auth || !auth.currentUser) return Promise.resolve();
                 window.app.syncProjectPermissionsStruct(project);
-                await setDoc(doc(db, 'projects', project.id), project, { merge: true });
+                if (!project.ownerEmail) project.ownerEmail = auth.currentUser.email.toLowerCase();
+                if (!project.modifiedAt) project.modifiedAt = Date.now();
+                const data = toCloudDoc(project);
+                const bytes = new Blob([JSON.stringify(data)]).size;
+                if (bytes > MAX_DOC_BYTES) {
+                    const msg = `«${project.title}» er for stort for skysynk (${Math.round(bytes / 1024)} KB av maks ~975 KB). Fjern noen bilder.`;
+                    setSyncError(msg);
+                    window.app.showToast(msg, 'amber');
+                    return Promise.resolve();
+                }
+                const synced = loadSyncedIds();
+                synced.add(project.id);
+                saveSyncedIds(synced);
+                // Full overwrite (no merge) so removed fields/collaborators really disappear
+                return trackWrite(setDoc(doc(db, 'projects', project.id), data), project.id);
             },
 
-            async deleteProject(projectId) {
-                if (!db || !auth || !auth.currentUser) return;
-                await deleteDoc(doc(db, 'projects', projectId));
+            deleteProject(projectId) {
+                if (!db || !auth || !auth.currentUser) return Promise.resolve();
+                const synced = loadSyncedIds();
+                synced.delete(projectId);
+                saveSyncedIds(synced);
+                return trackWrite(deleteDoc(doc(db, 'projects', projectId)), 'delete ' + projectId);
             },
 
             async pushAllLocalProjects(projects) {
                 if (!db || !auth || !auth.currentUser) {
-                    window.app.showToast('Logg inn først for å synkronisere prosjektene til Firestore', 'amber');
+                    window.app.showToast('Logg inn først for å synkronisere', 'amber');
                     return;
                 }
-                try {
-                    for (const p of projects) {
-                        p.ownerEmail = p.ownerEmail || auth.currentUser.email;
-                        window.app.syncProjectPermissionsStruct(p);
-                        await setDoc(doc(db, 'projects', p.id), p, { merge: true });
-                    }
-                    window.app.showToast(`Synkroniserte ${projects.length} prosjekter til Firestore!`, 'emerald');
-                } catch (err) {
-                    window.app.showToast(`Kunne ikke skrive til Firestore ennå – sjekk at Firestore Database er opprettet i Console`, 'amber');
-                }
+                const real = projects.filter(p => !p.isSample);
+                await Promise.all(real.map(p => this.saveProject(p)));
+                window.app.showToast(`Sendte ${real.length} prosjekter til skyen`, 'emerald');
             },
 
             async setNetworkMode(online) {
