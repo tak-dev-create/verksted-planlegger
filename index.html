@@ -544,40 +544,56 @@
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div>
                         <h3 class="font-bold text-base text-white">Materialliste, Kappliste &amp; Deler (BOM)</h3>
-                        <p class="text-xs text-slate-400">Importer Excel-kappliste (.xlsx), last ned tom mal, eller rediger kostnad per linje og lagerstatus direkte.</p>
+                        <p class="hidden sm:block text-xs text-slate-400">Importer Excel-kappliste (.xlsx), last ned tom mal, eller rediger kostnad per linje og lagerstatus direkte.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Excel Template Download -->
                         <button type="button" onclick="app.downloadBomExcelTemplate()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition">
-                            <span>📊 Last ned Excel-mal (.xlsx)</span>
+                            <span>📊 <span class="sm:hidden">Excel-mal</span><span class="hidden sm:inline">Last ned Excel-mal (.xlsx)</span></span>
                         </button>
                         <!-- Excel Import Button -->
                         <label id="bom-excel-import-label" class="cursor-pointer px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold flex items-center gap-1.5 transition">
-                            <span>📥 Importer Excel (.xlsx)</span>
+                            <span>📥 <span class="sm:hidden">Importer</span><span class="hidden sm:inline">Importer Excel (.xlsx)</span></span>
                             <input type="file" accept=".xlsx,.xls,.csv" onchange="app.importBomExcel(event)" class="hidden">
                         </label>
                     </div>
                 </div>
 
                 <!-- Summary Pills -->
-                <div id="bom-summary-pills" class="flex flex-wrap items-center gap-2 text-xs font-mono">
+                <div id="bom-summary-pills" class="grid grid-cols-2 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2 text-[11px] sm:text-xs font-mono">
                     <!-- Rendered via JS -->
                 </div>
 
+                <!-- Filter: all / to buy / in stock -->
+                <div id="bom-filter-chips" class="flex items-center gap-1.5 overflow-x-auto -mx-1 px-1 pb-0.5" style="scrollbar-width:none">
+                    <!-- Rendered via JS -->
+                </div>
+
+                <!-- Mobile: add button that opens the form -->
+                <button type="button" id="bom-add-toggle" onclick="app.toggleBomAddForm()" class="sm:hidden w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-3 rounded-xl text-sm transition">
+                    + Legg til del
+                </button>
+
                 <!-- Add BOM Item Form -->
-                <form id="bom-add-form" onsubmit="app.addBomItem(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                    <input type="text" id="bom-name" required="" placeholder="Del / Materiale (f.eks. Bunnplate)" class="sm:col-span-3 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2 text-sm text-white outline-none">
-                    <input type="text" id="bom-spec" placeholder="Mål LxBxT / Spec (f.eks. 400 x 260 x 4 mm)" class="sm:col-span-3 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2 text-sm text-white font-mono outline-none">
-                    <input type="text" id="bom-group" placeholder="Gruppe (f.eks. Brett og låve)" class="sm:col-span-2 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-2.5 py-2 text-sm text-white outline-none">
-                    <input type="number" id="bom-qty" required="" min="1" value="1" placeholder="Antall" class="sm:col-span-1 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-2.5 py-2 text-sm text-white font-mono outline-none">
-                    <input type="number" id="bom-price" min="0" step="any" placeholder="Kost/linje (kr)" class="sm:col-span-2 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2 text-sm text-white font-mono outline-none">
-                    <button type="submit" class="sm:col-span-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-2 px-3 rounded-lg text-sm transition" title="Legg til linje">
-                        +
+                <form id="bom-add-form" onsubmit="app.addBomItem(event)" class="hidden sm:grid grid-cols-2 sm:grid-cols-12 gap-2.5 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                    <input type="text" id="bom-name" required="" placeholder="Del / Materiale (f.eks. Bunnplate)" class="col-span-2 sm:col-span-3 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2 text-sm text-white outline-none">
+                    <input type="text" id="bom-spec" placeholder="Mål LxBxT / Spec (f.eks. 400 x 260 x 4 mm)" class="col-span-2 sm:col-span-3 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2 text-sm text-white font-mono outline-none">
+                    <input type="text" id="bom-group" list="bom-group-options" placeholder="Gruppe (f.eks. Brett og låve)" class="col-span-2 sm:col-span-2 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-2.5 py-2 text-sm text-white outline-none">
+                    <input type="number" id="bom-qty" required="" min="1" value="1" inputmode="numeric" placeholder="Antall" class="sm:col-span-1 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-2.5 py-2 text-sm text-white font-mono outline-none">
+                    <input type="number" id="bom-price" min="0" step="any" inputmode="decimal" placeholder="Kost/linje (kr)" class="sm:col-span-2 bg-slate-900 border border-slate-800 focus:border-amber-500 rounded-lg px-3 py-2 text-sm text-white font-mono outline-none">
+                    <button type="submit" class="col-span-2 sm:col-span-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold py-2.5 sm:py-2 px-3 rounded-lg text-sm transition" title="Legg til linje">
+                        <span class="sm:hidden">Legg til i listen</span><span class="hidden sm:inline">+</span>
                     </button>
+                    <datalist id="bom-group-options"></datalist>
                 </form>
 
-                <!-- Responsive BOM Table -->
-                <div class="overflow-x-auto">
+                <!-- Mobile: card list grouped by group -->
+                <div id="bom-mobile-list" class="sm:hidden space-y-4">
+                    <!-- Rendered via JS -->
+                </div>
+
+                <!-- BOM Table (tablet / desktop) -->
+                <div class="hidden sm:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
@@ -1939,7 +1955,13 @@ service cloud.firestore {
                 const editable = this.canEdit();
                 document.getElementById('xtiles-toolbar-actions')?.classList.toggle('hidden', !editable);
                 document.getElementById('btn-add-spec')?.classList.toggle('hidden', !editable);
-                document.getElementById('bom-add-form')?.classList.toggle('hidden', !editable);
+                // Form: always visible on desktop when editable; on mobile it opens via the add button
+                const bomForm = document.getElementById('bom-add-form');
+                if (bomForm) {
+                    bomForm.classList.toggle('sm:grid', editable);
+                    if (!editable) { bomForm.classList.add('hidden'); bomForm.classList.remove('grid'); }
+                }
+                document.getElementById('bom-add-toggle')?.classList.toggle('hidden', !editable);
                 document.getElementById('bom-excel-import-label')?.classList.toggle('hidden', !editable);
                 document.getElementById('blueprint-upload-label')?.classList.toggle('hidden', !editable);
                 document.getElementById('log-form-card')?.classList.toggle('hidden', !editable);
@@ -2045,16 +2067,30 @@ service cloud.firestore {
                 const totalPieces = p.bom.reduce((s, b) => s + (Number(b.qty) || 0), 0);
 
                 document.getElementById('bom-summary-pills').innerHTML = `
-                    <span class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">Totalt antall: ${totalPieces} stk</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">Totalt antall: ${this.fmtNum(totalPieces)} stk</span>
                     ${totalAreaCm2 > 0 ? `<span class="px-2.5 py-1 rounded-lg bg-sky-950/70 border border-sky-800/60 text-sky-300">Plateareal: ${Math.round(totalAreaCm2).toLocaleString('no-NO')} cm² (${(totalAreaCm2 / 10000).toFixed(2)} m²)</span>` : ''}
                     <span class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-white">Totalkostnad: ${totalCost.toLocaleString('no-NO')} kr</span>
                     <span class="px-2.5 py-1 rounded-lg bg-purple-950/70 border border-purple-800/60 text-purple-300">Gjenstår å kjøpe: ${missingSum.toLocaleString('no-NO')} kr</span>
                 `;
 
+                // Filter chips + mobile cards
+                const bomFilter = this.bomFilter || 'all';
+                const toBuyCount = p.bom.filter(b => !b.inStock).length;
+                const chip = (key, label) => `<button type="button" onclick="app.setBomFilter('${key}')" class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition ${
+                    bomFilter === key ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-600'}">${label}</button>`;
+                document.getElementById('bom-filter-chips').innerHTML =
+                    chip('all', `Alle (${p.bom.length})`) +
+                    chip('buy', `🛒 Må kjøpes (${toBuyCount})`) +
+                    chip('stock', `✓ På lager (${p.bom.length - toBuyCount})`);
+                document.getElementById('bom-group-options').innerHTML =
+                    [...new Set(p.bom.map(b => b.group).filter(Boolean))].map(g => `<option value="${g}"></option>`).join('');
+                this.renderBomMobile(p, editable, bomFilter);
+
                 if (p.bom.length === 0) {
                     bomBody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-xs text-slate-500">Ingen materialer eller deler registrert ennå. Importer en Excel-kappliste (.xlsx) eller legg til manuelt over!</td></tr>`;
                 } else {
                     bomBody.innerHTML = p.bom.map((b, idx) => {
+                        if (!this.bomMatchesFilter(b, bomFilter)) return '';
                         const lineCost = this.getBomLineCost(b);
                         const dimsText = (b.length || b.width || b.thickness)
                             ? `${b.length || '—'} × ${b.width || '—'} × ${b.thickness || '—'} mm`
@@ -2071,7 +2107,7 @@ service cloud.firestore {
                                     ${b.group ? `<span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-amber-300/90 text-[11px] mb-0.5">${b.group}</span>` : ''}
                                     ${b.note ? `<div class="text-[11px] text-slate-400 leading-snug">${b.note}</div>` : (!b.group ? '—' : '')}
                                 </td>
-                                <td class="py-3 px-2.5 text-right font-mono">${b.qty}</td>
+                                <td class="py-3 px-2.5 text-right font-mono">${this.fmtNum(b.qty)}</td>
                                 <td class="py-3 px-2.5 text-right font-mono text-xs text-slate-400">${areaDisplay}</td>
                                 <td class="py-3 px-2.5 text-right font-mono">
                                     ${editable ? `
@@ -2731,6 +2767,148 @@ service cloud.firestore {
 
                 this.saveToStorage();
                 this.renderProjectDetail();
+                document.getElementById('bom-name').focus();
+            },
+
+            bomFilter: 'all',
+            _bomOpen: new Set(),
+
+            fmtNum(n) {
+                return (Number(n) || 0).toLocaleString('no-NO', { maximumFractionDigits: 2 });
+            },
+
+            bomMatchesFilter(b, filter) {
+                if (filter === 'buy') return !b.inStock;
+                if (filter === 'stock') return !!b.inStock;
+                return true;
+            },
+
+            setBomFilter(filter) {
+                this.bomFilter = filter;
+                this.renderProjectDetail();
+            },
+
+            toggleBomAddForm(forceOpen) {
+                const form = document.getElementById('bom-add-form');
+                const btn = document.getElementById('bom-add-toggle');
+                const open = forceOpen !== undefined ? forceOpen : form.classList.contains('hidden');
+                form.classList.toggle('hidden', !open);
+                form.classList.toggle('grid', open);
+                btn.textContent = open ? 'Lukk skjema' : '+ Legg til del';
+                if (open) setTimeout(() => document.getElementById('bom-name').focus(), 50);
+            },
+
+            toggleBomDetails(bomId) {
+                if (this._bomOpen.has(bomId)) this._bomOpen.delete(bomId);
+                else this._bomOpen.add(bomId);
+                this.renderProjectDetail();
+            },
+
+            changeBomQty(bomId, delta) {
+                if (!this.canEdit()) return;
+                const p = this.getCurrentProject();
+                const item = p.bom.find(x => x.id === bomId);
+                if (!item) return;
+                const oldQty = Number(item.qty) || 1;
+                const newQty = Math.max(1, oldQty + delta);
+                if (newQty === oldQty) return;
+                // Keep the unit price when the line cost was set for the old quantity
+                const unit = this.getBomLineCost(item) / oldQty;
+                item.qty = newQty;
+                if (item.lineCost !== undefined && item.lineCost !== null) {
+                    item.lineCost = Math.round(unit * newQty * 100) / 100;
+                }
+                this.saveToStorage(false);
+                this.renderProjectDetail();
+            },
+
+            renderBomMobile(p, editable, filter) {
+                const box = document.getElementById('bom-mobile-list');
+                if (!box) return;
+                if (p.bom.length === 0) {
+                    box.innerHTML = `<div class="py-8 text-center text-xs text-slate-500">Ingen materialer ennå. Trykk «+ Legg til del» eller importer en Excel-kappliste.</div>`;
+                    return;
+                }
+                const visible = p.bom.filter(b => this.bomMatchesFilter(b, filter));
+                if (visible.length === 0) {
+                    box.innerHTML = `<div class="py-8 text-center text-sm text-emerald-300">${filter === 'buy' ? '🎉 Alt er kjøpt inn!' : 'Ingen deler i denne visningen.'}</div>`;
+                    return;
+                }
+                // Group by b.group, keep first-seen order
+                const groups = new Map();
+                visible.forEach(b => {
+                    const g = b.group || 'Uten gruppe';
+                    if (!groups.has(g)) groups.set(g, []);
+                    groups.get(g).push(b);
+                });
+                const kr = n => `${Math.round(n).toLocaleString('no-NO')} kr`;
+
+                box.innerHTML = [...groups.entries()].map(([group, items]) => {
+                    const sum = items.reduce((s, b) => s + this.getBomLineCost(b), 0);
+                    const cards = items.map(b => {
+                        const lineCost = this.getBomLineCost(b);
+                        const open = this._bomOpen.has(b.id);
+                        const dims = (b.length || b.width || b.thickness)
+                            ? `${b.length || '—'} × ${b.width || '—'} × ${b.thickness || '—'} mm`
+                            : (b.spec || '');
+                        const area = b.areaTotal ? `${Number(b.areaTotal).toLocaleString('no-NO')} cm²` : '';
+                        return `
+                            <div class="rounded-xl border ${b.inStock ? 'border-slate-800 bg-slate-950/40' : 'border-purple-800/50 bg-slate-950'} overflow-hidden">
+                                <div class="flex items-stretch">
+                                    <button type="button" ${editable ? `onclick="app.toggleBomStock('${b.id}', true)"` : 'disabled'}
+                                        aria-label="${b.inStock ? 'Marker som må kjøpes' : 'Marker som på lager'}"
+                                        class="shrink-0 w-14 flex items-center justify-center border-r ${b.inStock ? 'border-slate-800' : 'border-purple-800/50'} ${editable ? 'active:bg-slate-800' : 'opacity-60'}">
+                                        <span class="w-7 h-7 rounded-lg border-2 flex items-center justify-center text-base font-bold ${
+                                            b.inStock ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'border-purple-400/70 text-transparent'}">✓</span>
+                                    </button>
+                                    <button type="button" onclick="app.toggleBomDetails('${b.id}')" class="flex-1 min-w-0 text-left px-3 py-2.5">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <div class="font-medium text-sm leading-snug ${b.inStock ? 'text-slate-400 line-through decoration-slate-600' : 'text-white'}">${b.name}</div>
+                                                ${dims ? `<div class="font-mono text-[11px] text-slate-400 mt-0.5 break-words">${dims}</div>` : ''}
+                                            </div>
+                                            <div class="shrink-0 text-right">
+                                                <div class="font-mono text-sm font-semibold ${b.inStock ? 'text-slate-400' : 'text-white'}">${this.fmtNum(b.qty)} stk</div>
+                                                <div class="font-mono text-[11px] text-slate-400">${kr(lineCost)}</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                                ${open ? `
+                                <div class="border-t border-slate-800 px-3 py-3 space-y-3 bg-slate-900/60">
+                                    ${b.note ? `<p class="text-xs text-slate-300 leading-relaxed">${b.note}</p>` : ''}
+                                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-mono text-slate-400">
+                                        <span>Pos ${b.pos || '—'}</span>
+                                        ${area ? `<span>Areal ${area}</span>` : ''}
+                                        ${b.spec && dims !== b.spec ? `<span>${b.spec}</span>` : ''}
+                                    </div>
+                                    ${editable ? `
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex items-center rounded-lg border border-slate-700 overflow-hidden">
+                                            <button type="button" onclick="app.changeBomQty('${b.id}', -1)" class="w-10 h-10 text-lg text-slate-200 active:bg-slate-700">−</button>
+                                            <span class="w-10 text-center font-mono text-sm text-white">${this.fmtNum(b.qty)}</span>
+                                            <button type="button" onclick="app.changeBomQty('${b.id}', 1)" class="w-10 h-10 text-lg text-slate-200 active:bg-slate-700">+</button>
+                                        </div>
+                                        <label class="flex-1 flex items-center gap-2 text-xs text-slate-400">
+                                            <span>kr</span>
+                                            <input type="number" min="0" step="any" inputmode="decimal" value="${lineCost}" onchange="app.updateBomLineCost('${b.id}', this.value)"
+                                                class="w-full h-10 text-right bg-slate-950 border border-slate-700 focus:border-amber-500 rounded-lg px-2 text-sm font-mono text-white outline-none">
+                                        </label>
+                                    </div>
+                                    <button type="button" onclick="if (confirm('Slette «${String(b.name).replace(/'/g, '')}»?')) app.deleteBomItem('${b.id}')" class="w-full py-2 rounded-lg border border-red-900/60 text-red-300 text-xs active:bg-red-950">Slett del</button>
+                                    ` : ''}
+                                </div>` : ''}
+                            </div>`;
+                    }).join('');
+                    return `
+                        <section class="space-y-2">
+                            <div class="flex items-baseline justify-between px-1">
+                                <h4 class="text-[11px] font-bold uppercase tracking-wider text-amber-300/90">${group}</h4>
+                                <span class="text-[11px] font-mono text-slate-500">${items.length} • ${kr(sum)}</span>
+                            </div>
+                            ${cards}
+                        </section>`;
+                }).join('');
             },
 
             getBomLineCost(b) {
@@ -2907,13 +3085,13 @@ service cloud.firestore {
                 reader.readAsArrayBuffer(file);
             },
 
-            toggleBomStock(bomId) {
+            toggleBomStock(bomId, quiet = false) {
                 if (!this.canEdit()) return;
                 const p = this.getCurrentProject();
                 const item = p.bom.find(x => x.id === bomId);
                 if (item) {
                     item.inStock = !item.inStock;
-                    this.saveToStorage();
+                    this.saveToStorage(!quiet);
                     this.renderProjectDetail();
                 }
             },
